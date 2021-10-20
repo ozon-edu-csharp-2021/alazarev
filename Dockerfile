@@ -5,9 +5,9 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["OzonEdu.MerchApi.csproj", "."]
+COPY ["src/OzonEdu.MerchApi/OzonEdu.MerchApi.csproj", "."]
 RUN dotnet restore "OzonEdu.MerchApi.csproj"
-COPY . .
+COPY ["src/OzonEdu.MerchApi/","."]
 RUN dotnet build "OzonEdu.MerchApi.csproj" -c Release -o /app/build
 
 FROM build AS publish

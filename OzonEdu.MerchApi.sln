@@ -9,10 +9,15 @@ ProjectSection(SolutionItems) = preProject
 	README.md = README.md
 	.editorconfig = .editorconfig
 	.gitignore = .gitignore
-	docker-compose.yml = docker-compose.yml
+	Dockerfile = Dockerfile
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonEdu.MerchApi", "src\OzonEdu.MerchApi\OzonEdu.MerchApi.csproj", "{6A4516AF-8367-46E5-AB03-294779A0337B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deploy", "deploy", "{F02FE304-543F-4E08-94AD-22DF4BEE62B1}"
+ProjectSection(SolutionItems) = preProject
+	deploy\docker-compose.yml = deploy\docker-compose.yml
+EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

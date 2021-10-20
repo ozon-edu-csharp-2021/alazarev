@@ -7,16 +7,16 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
     build:
-      context: ./src/OzonEdu.MerchApi/
+      context: ./../
     depends_on:
       - stock.api
       - emailing.service
       - employees.service
       - supply.service
     ports:
-      - 80:80
-    expose:
-      - 80
+      - 8080:80
+#    expose:
+#      - 80
         
   stock.api:
     image: ghcr.io/ozon-edu-csharp-2021/stock-api:main
