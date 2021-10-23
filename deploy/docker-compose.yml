@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  merch.api:
+    image: merch-api
+    hostname: merch_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    build:
+      context: ./../
+    depends_on:
+      - stock.api
+      - emailing.service
+      - employees.service
+      - supply.service
+    ports:
+      - 8080:80
+#    expose:
+#      - 80
+        
+  stock.api:
+    image: ghcr.io/ozon-edu-csharp-2021/stock-api:main
+    hostname: stock_api
+    
+  emailing.service:
+    image: ghcr.io/ozon-edu-csharp-2021/emailing-service:main
+    hostname: emailing_service
+    
+  employees.service:
+    image: ghcr.io/ozon-edu-csharp-2021/employees-service:main
+    hostname: employees_service
+    
+  supply.service:
+    image: ghcr.io/ozon-edu-csharp-2021/supply-service:main
+    hostname: supply_service
