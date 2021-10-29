@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using OzonEdu.MerchApi.Models;
-using MerchType = CSharpCourse.Core.Lib.Enums.MerchType;
+using OzonEdu.MerchApi.HttpModels;
 
 namespace OzonEdu.MerchApi.Services.Interfaces
 {
@@ -14,20 +13,19 @@ namespace OzonEdu.MerchApi.Services.Interfaces
         /// <summary>
         /// Отправить запрос на выдачу мерча
         /// </summary>
-        /// <param name="employeeId">Идентфиикатор сотрудника</param>
-        /// <param name="merchType">Тип запрашиваемого мерча</param>
+        /// <param name="request">Запрос</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<RequestMerchStatus> RequestMerchAsync(int employeeId, MerchType merchType,
+        Task<RequestMerchResponse> RequestMerchAsync(RequestMerchRequest request,
             CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Получить информацию по всем выданным мерчам
         /// </summary>
-        /// <param name="employeeId">Идентфиикатор сотрудника</param>
+        /// <param name="request">Запрос</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IEnumerable<MerchInfoModel>> GetReceivingMerchInfoAsync(int employeeId,
+        Task<GetReceivingMerchInfoResponse> GetReceivingMerchInfoAsync(GetReceivingMerchInfoRequest request,
             CancellationToken cancellationToken = default);
     }
 }

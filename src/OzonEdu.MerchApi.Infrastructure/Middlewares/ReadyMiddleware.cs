@@ -12,6 +12,9 @@ namespace OzonEdu.MerchApi.Infrastructure.Middlewares
         {
         }
 
-        public Task InvokeAsync(HttpContext context)=> Task.CompletedTask;
+        public async Task InvokeAsync(HttpContext context)
+        {
+            await context.Response.WriteAsync("200 Ok");
+        }
     }
 }

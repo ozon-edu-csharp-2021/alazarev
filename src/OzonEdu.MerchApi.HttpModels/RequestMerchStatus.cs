@@ -1,4 +1,4 @@
-namespace OzonEdu.MerchApi.Models
+namespace OzonEdu.MerchApi.HttpModels
 {
     /// <summary>
     /// Результат запроса на получение мерча

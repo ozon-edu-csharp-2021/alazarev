@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using OzonEdu.MerchApi.Models;
+using CSharpCourse.Core.Lib.Enums;
+using OzonEdu.MerchApi.HttpModels;
 using OzonEdu.MerchApi.Services.Interfaces;
-using MerchType = CSharpCourse.Core.Lib.Enums.MerchType;
 
 namespace OzonEdu.MerchApi.Services
 {
@@ -13,23 +13,23 @@ namespace OzonEdu.MerchApi.Services
     /// </summary>
     public class MerchService : IMerchService
     {
-        public Task<RequestMerchStatus> RequestMerchAsync(int employeeId, MerchType merchType,
+        public Task<RequestMerchResponse> RequestMerchAsync(RequestMerchRequest request,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(RequestMerchStatus.Reserved);
+            return Task.FromResult(new RequestMerchResponse(RequestMerchStatus.Reserved));
         }
 
-        public Task<IEnumerable<MerchInfoModel>> GetReceivingMerchInfoAsync(int employeeId,
+        public Task<GetReceivingMerchInfoResponse> GetReceivingMerchInfoAsync(GetReceivingMerchInfoRequest request,
             CancellationToken cancellationToken = default)
         {
             var response = new[]
             {
-                new MerchInfoModel(MerchType.WelcomePack, DateTime.UtcNow.AddDays(-40)),
-                new MerchInfoModel(MerchType.ConferenceListenerPack, DateTime.UtcNow.AddDays(-10)),
-                new MerchInfoModel(MerchType.ProbationPeriodEndingPack, DateTime.UtcNow.AddDays(-500))
+                new MerchInfo(MerchType.WelcomePack, DateTime.UtcNow.AddDays(-40)),
+                new MerchInfo(MerchType.ConferenceListenerPack, DateTime.UtcNow.AddDays(-10)),
+                new MerchInfo(MerchType.ProbationPeriodEndingPack, DateTime.UtcNow.AddDays(-500))
             };
 
-            return Task.FromResult<IEnumerable<MerchInfoModel>>(response);
+            return Task.FromResult(new GetReceivingMerchInfoResponse(response));
         }
     }
 }

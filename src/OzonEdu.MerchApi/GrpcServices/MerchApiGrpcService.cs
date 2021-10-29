@@ -1,49 +1,53 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using OzonEdu.MerchApi.Grpc;
-using OzonEdu.MerchApi.Mappers;
 using OzonEdu.MerchApi.Services.Interfaces;
-using RequestMerchModelStatus = OzonEdu.MerchApi.Models.RequestMerchStatus;
+using RequestMerchRequestGrpc = OzonEdu.MerchApi.Grpc.RequestMerchRequest;
+using RequestMerchResponseGrpc = OzonEdu.MerchApi.Grpc.RequestMerchResponse;
+using GetReceivingMerchInfoRequestGprc = OzonEdu.MerchApi.Grpc.GetReceivingMerchInfoRequest;
+using GetReceivingMerchInfoResponseGprc = OzonEdu.MerchApi.Grpc.GetReceivingMerchInfoResponse;
+using RequestMerchRequestHttp = OzonEdu.MerchApi.HttpModels.RequestMerchRequest;
+using RequestMerchResponseHttp = OzonEdu.MerchApi.HttpModels.RequestMerchResponse;
+using GetReceivingMerchInfoRequestHttp = OzonEdu.MerchApi.HttpModels.GetReceivingMerchInfoRequest;
+using GetReceivingMerchInfoResponseHttp = OzonEdu.MerchApi.HttpModels.GetReceivingMerchInfoResponse;
 
 namespace OzonEdu.MerchApi.GrpcServices
 {
     public sealed class MerchApiGrpcService : MerchApiGrpc.MerchApiGrpcBase
     {
         private readonly IMerchService _merchService;
+        private readonly IMapper _mapper;
 
-        public MerchApiGrpcService(IMerchService merchService)
+        public MerchApiGrpcService(IMerchService merchService, IMapper mapper)
         {
             _merchService = merchService;
+            _mapper = mapper;
         }
 
         public override async Task<RequestMerchResponse> RequestMerch(RequestMerchRequest request,
             ServerCallContext context)
         {
-            var merchTypeFromGrpc = GrpcMapper.MerchTypeToModelType(request.MerchType);
-
+            
             var result =
-                await _merchService.RequestMerchAsync(request.EmployeeId, merchTypeFromGrpc, context.CancellationToken);
+                await _merchService.RequestMerchAsync(_mapper.Map<RequestMerchRequestHttp>(request) ,
+                    context.CancellationToken);
 
-            return new RequestMerchResponse
-            {
-                Status = GrpcMapper.RequestMerchStatusToGrpc(result)
-            };
+            return _mapper.Map<RequestMerchResponseGrpc>(result);
         }
 
         public override async Task<GetReceivingMerchInfoResponse> GetReceivingMerchInfo(
             GetReceivingMerchInfoRequest request,
             ServerCallContext context)
         {
-            var models = await _merchService.GetReceivingMerchInfoAsync(request.EmployeeId, context.CancellationToken);
+            var result =
+                await _merchService.GetReceivingMerchInfoAsync(_mapper.Map<GetReceivingMerchInfoRequestHttp>(request),
+                    context.CancellationToken);
 
-            return new GetReceivingMerchInfoResponse
-            {
-                Items =
-                {
-                    models.Select(GrpcMapper.MerchInfoModelToGrpc)
-                }
-            };
+            return _mapper.Map<GetReceivingMerchInfoResponseGprc>(result);
         }
     }
 }

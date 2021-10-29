@@ -20,24 +20,22 @@ namespace OzonEdu.MerchApi.Controllers.V1
         }
 
         [HttpPost("request")]
-        public async Task<ActionResult<RequestMerchResponseViewModel>> RequestMerch(
-            [FromBody] RequestMerchViewModel request,
+        public async Task<ActionResult<RequestMerchResponse>> RequestMerch(
+            [FromBody] RequestMerchRequest request,
             CancellationToken token)
         {
-            var status = await _merchService.RequestMerchAsync(request.EmployeeId, request.MerchType, token);
+            var response = await _merchService.RequestMerchAsync(request, token);
 
-            var statusViewModel = ViewModelMapper.RequestMerchStatusToViewModelStatus(status);
-
-            return Ok(new RequestMerchResponseViewModel(statusViewModel));
+            return Ok(response);
         }
 
         [HttpGet("getinfo/{employeeId:int}")]
-        public async Task<ActionResult<GetReceivingMerchInfoResponseViewModel>> GetReceivingMerchInfo(int employeeId,
+        public async Task<ActionResult<GetReceivingMerchInfoResponse>> GetReceivingMerchInfo(
+            GetReceivingMerchInfoRequest request,
             CancellationToken token)
         {
-            var items = await _merchService.GetReceivingMerchInfoAsync(employeeId, token);
-            var viewModelItems = items.Select(ViewModelMapper.MerchInfoModelToViewModel).ToArray();
-            return Ok(new GetReceivingMerchInfoResponseViewModel(viewModelItems));
+            var response = await _merchService.GetReceivingMerchInfoAsync(request, token);
+            return Ok(response);
         }
     }
 }

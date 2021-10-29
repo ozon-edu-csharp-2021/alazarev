@@ -6,10 +6,10 @@ namespace OzonEdu.MerchApi.HttpClient
 {
     public interface IMerchHttpClient
     {
-        Task<RequestMerchResponseViewModel> RequestMerch(RequestMerchViewModel request,
+        Task<RequestMerchResponse> RequestMerch(RequestMerchRequest request,
             CancellationToken cancellationToken = default);
 
-        Task<GetReceivingMerchInfoResponseViewModel> GetReceivingMerchInfo(GetReceivingMerchInfoViewModel request,
+        Task<GetReceivingMerchInfoResponse> GetReceivingMerchInfo(GetReceivingMerchInfoRequest request,
             CancellationToken cancellationToken = default);
     }
 }

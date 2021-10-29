@@ -24,7 +24,6 @@ namespace OzonEdu.MerchApi.Infrastructure.Extensions
                 services.AddGrpc(options => options.Interceptors.Add<LoggerInterceptor>());
                 services.AddControllers(options => options.Filters.Add<GlobalExceptionFilter>());
 
-
                 services.AddControllersWithViews()
                     .AddJsonOptions(options =>
                         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
