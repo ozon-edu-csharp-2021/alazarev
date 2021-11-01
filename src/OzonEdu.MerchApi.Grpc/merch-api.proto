@@ -1,0 +1,48 @@
+syntax = "proto3";
+option csharp_namespace = "OzonEdu.MerchApi.Grpc";
+
+package MerchApi;
+
+import "google/protobuf/timestamp.proto";
+
+service MerchApiGrpc {
+  rpc GetReceivingMerchInfo (GetReceivingMerchInfoRequest) returns (GetReceivingMerchInfoResponse);
+  rpc RequestMerch (RequestMerchRequest) returns (RequestMerchResponse);
+}
+
+message RequestMerchRequest {
+  int32 employee_id = 1;
+  MerchType merch_type = 2;
+}
+
+message RequestMerchResponse{
+  RequestMerchStatus status = 1;
+}
+
+message GetReceivingMerchInfoRequest {
+  int32 employee_id = 1;
+}
+
+message GetReceivingMerchInfoResponse {
+  repeated MerchInfo items = 1;
+}
+
+message MerchInfo {
+  MerchType merch_type = 1;
+  google.protobuf.Timestamp receiving_date = 2;
+}
+
+enum MerchType {
+  UNKNOWN = 0;
+  WELCOME_PACK = 1;
+  CONFERENCE_LISTENER_PACK = 2;
+  CONFERENCE_SPEAKER_PACK = 3;
+  PROBATION_PERIOD_ENDING_PACK = 4;
+  VETERAN_PACK = 5;
+}
+
+enum RequestMerchStatus {
+  RESERVED = 0;
+  ALREADY_RECEIVED = 1;
+  NOT_AVAILABLE = 2;
+}

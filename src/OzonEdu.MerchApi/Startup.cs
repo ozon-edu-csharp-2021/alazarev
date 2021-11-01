@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using OzonEdu.MerchApi.GrpcServices;
+using OzonEdu.MerchApi.Mappers;
+using OzonEdu.MerchApi.Services;
+using OzonEdu.MerchApi.Services.Interfaces;
 
 namespace OzonEdu.MerchApi
 {
@@ -9,6 +12,8 @@ namespace OzonEdu.MerchApi
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IMerchService, MerchService>();
+            services.AddAutoMapper(cfg => cfg.AddProfile<GprcMappingProfile>());
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -16,8 +21,8 @@ namespace OzonEdu.MerchApi
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/",
-                    async context => { await context.Response.WriteAsync($"{nameof(MerchApi)} ready"); });
+                endpoints.MapGrpcService<MerchApiGrpcService>();
+                endpoints.MapControllers();
             });
         }
     }
