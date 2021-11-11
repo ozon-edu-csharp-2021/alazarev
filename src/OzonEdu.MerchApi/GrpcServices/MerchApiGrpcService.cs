@@ -1,50 +1,50 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
+using OzonEdu.MerchApi.Domain.Contracts.DomainServices.MerchRequestService;
 using OzonEdu.MerchApi.Grpc;
-using OzonEdu.MerchApi.Services.Interfaces;
+using OzonEdu.MerchApi.HttpModels;
 using RequestMerchRequestGrpc = OzonEdu.MerchApi.Grpc.RequestMerchRequest;
 using RequestMerchResponseGrpc = OzonEdu.MerchApi.Grpc.RequestMerchResponse;
-using GetReceivingMerchInfoRequestGprc = OzonEdu.MerchApi.Grpc.GetReceivingMerchInfoRequest;
-using GetReceivingMerchInfoResponseGprc = OzonEdu.MerchApi.Grpc.GetReceivingMerchInfoResponse;
-using RequestMerchRequestHttp = OzonEdu.MerchApi.HttpModels.RequestMerchRequest;
+using GetReceivingMerchInfoRequestGprc = OzonEdu.MerchApi.Grpc.GetMerchInfoRequest;
+using GetReceivingMerchInfoResponseGprc = OzonEdu.MerchApi.Grpc.GetMerchInfoResponse;
 using RequestMerchResponseHttp = OzonEdu.MerchApi.HttpModels.RequestMerchResponse;
-using GetReceivingMerchInfoRequestHttp = OzonEdu.MerchApi.HttpModels.GetReceivingMerchInfoRequest;
-using GetReceivingMerchInfoResponseHttp = OzonEdu.MerchApi.HttpModels.GetReceivingMerchInfoResponse;
+using GetReceivingMerchInfoRequestHttp = OzonEdu.MerchApi.HttpModels.GetMerchInfoRequest;
+using GetReceivingMerchInfoResponseHttp = OzonEdu.MerchApi.HttpModels.GetMerchInfoResponse;
 
 namespace OzonEdu.MerchApi.GrpcServices
 {
     public sealed class MerchApiGrpcService : MerchApiGrpc.MerchApiGrpcBase
     {
-        private readonly IMerchService _merchService;
+        private readonly IMerchRequestService _merchService;
         private readonly IMapper _mapper;
 
-        public MerchApiGrpcService(IMerchService merchService, IMapper mapper)
+        public MerchApiGrpcService(IMerchRequestService merchService, IMapper mapper)
         {
             _merchService = merchService;
             _mapper = mapper;
         }
 
-        public override async Task<RequestMerchResponse> RequestMerch(RequestMerchRequest request,
+        public override async Task<RequestMerchResponseGrpc> RequestMerch(RequestMerchRequest request,
             ServerCallContext context)
         {
-            
+            var mappedRequest = _mapper.Map<CreateMerchRequest>(request);
+
             var result =
-                await _merchService.RequestMerchAsync(_mapper.Map<RequestMerchRequestHttp>(request) ,
+                await _merchService.CreateMerchRequestAsync(mappedRequest.EmployeeEmail, mappedRequest.MerchType,
+                    MerchRequestMode.ByRequest,
                     context.CancellationToken);
 
-            return _mapper.Map<RequestMerchResponseGrpc>(result);
+            return _mapper.Map<RequestMerchResponseGrpc>(result.Status);
         }
 
-        public override async Task<GetReceivingMerchInfoResponse> GetReceivingMerchInfo(
-            GetReceivingMerchInfoRequest request,
+        public override async Task<GetReceivingMerchInfoResponseGprc> GetReceivingMerchInfo(
+            GetReceivingMerchInfoRequestGprc request,
             ServerCallContext context)
         {
             var result =
-                await _merchService.GetReceivingMerchInfoAsync(_mapper.Map<GetReceivingMerchInfoRequestHttp>(request),
+                await _merchService.GetMerchInfoAsync(request.EmployeeEmail,
                     context.CancellationToken);
 
             return _mapper.Map<GetReceivingMerchInfoResponseGprc>(result);

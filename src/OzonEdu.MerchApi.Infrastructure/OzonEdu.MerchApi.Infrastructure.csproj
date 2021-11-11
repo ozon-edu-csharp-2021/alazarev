@@ -6,15 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
-      <PackageReference Include="Grpc.AspNetCore" Version="2.40.0" />
-      <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-      <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-      <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
-      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+      <PackageReference Include="AutoMapper" Version="10.1.1" />
+      <PackageReference Include="CSharpCourse.Core.Lib" Version="1.4.0" />
+      <PackageReference Include="FluentValidation" Version="10.3.4" />
+      <PackageReference Include="Scrutor" Version="3.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\OzonEdu.MerchApi.Domain\OzonEdu.MerchApi.Domain.csproj" />
     </ItemGroup>
 
 </Project>

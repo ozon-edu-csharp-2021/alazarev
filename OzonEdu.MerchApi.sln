@@ -10,6 +10,8 @@ ProjectSection(SolutionItems) = preProject
 	.editorconfig = .editorconfig
 	.gitignore = .gitignore
 	Dockerfile = Dockerfile
+	MerchApi_Bounded_Context_Canvas.drawio = MerchApi_Bounded_Context_Canvas.drawio
+	MerchApi_Bounded_Context_Canvas.png = MerchApi_Bounded_Context_Canvas.png
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonEdu.MerchApi", "src\OzonEdu.MerchApi\OzonEdu.MerchApi.csproj", "{6A4516AF-8367-46E5-AB03-294779A0337B}"
@@ -27,6 +29,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonEdu.MerchApi.Grpc", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonEdu.MerchApi.Infrastructure", "src\OzonEdu.MerchApi.Infrastructure\OzonEdu.MerchApi.Infrastructure.csproj", "{0B3B3E3E-D5B2-4F86-ABA7-41D8DBDBC3AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonEdu.MerchApi.Domain", "src\OzonEdu.MerchApi.Domain\OzonEdu.MerchApi.Domain.csproj", "{A4DDA824-A43A-4313-8852-1EA637F8ABF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzonEdu.MerchApi.Tests", "tests\OzonEdu.MerchApi.Tests\OzonEdu.MerchApi.Tests.csproj", "{92A7F09E-EF0B-4664-AF72-C953A0A9E7F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +44,8 @@ Global
 		{6DE24554-279F-4D2E-A62F-1FE351C3A898} = {4697CFC5-DAA8-42B9-98B7-CE90C83576F2}
 		{214EF9D3-A385-4C67-A9C9-2D401AC0A1EC} = {4697CFC5-DAA8-42B9-98B7-CE90C83576F2}
 		{0B3B3E3E-D5B2-4F86-ABA7-41D8DBDBC3AB} = {4697CFC5-DAA8-42B9-98B7-CE90C83576F2}
+		{A4DDA824-A43A-4313-8852-1EA637F8ABF5} = {4697CFC5-DAA8-42B9-98B7-CE90C83576F2}
+		{92A7F09E-EF0B-4664-AF72-C953A0A9E7F5} = {6C247A80-B6ED-4A0E-B6B3-1C5667CFAB5D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6A4516AF-8367-46E5-AB03-294779A0337B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -60,5 +68,13 @@ Global
 		{0B3B3E3E-D5B2-4F86-ABA7-41D8DBDBC3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B3B3E3E-D5B2-4F86-ABA7-41D8DBDBC3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B3B3E3E-D5B2-4F86-ABA7-41D8DBDBC3AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4DDA824-A43A-4313-8852-1EA637F8ABF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4DDA824-A43A-4313-8852-1EA637F8ABF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4DDA824-A43A-4313-8852-1EA637F8ABF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4DDA824-A43A-4313-8852-1EA637F8ABF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92A7F09E-EF0B-4664-AF72-C953A0A9E7F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92A7F09E-EF0B-4664-AF72-C953A0A9E7F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92A7F09E-EF0B-4664-AF72-C953A0A9E7F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92A7F09E-EF0B-4664-AF72-C953A0A9E7F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
