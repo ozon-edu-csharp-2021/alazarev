@@ -93,8 +93,6 @@ namespace OzonEdu.MerchApi.Infrastructure.DomainServices
         {
             var employeeRequests = await _merchRequestRepository.GetAllEmployeeRequestsAsync(employeeId, token);
 
-            var x = employeeRequests.First();
-
             return !employeeRequests.Any(r =>
                 r.RequestedMerchType == merchType
                 && r.EmployeeId.Value == employeeId
