@@ -10,7 +10,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Queries.GetEmployeeMerchRequests
         public bool IsSuccess { get; private init; }
         public string Message { get; private init; }
 
-        public IEnumerable<MerchRequest> Requests { get; private init; }
+        public IEnumerable<IMerchRequest> Requests { get; private init; }
 
         public static GetEmployeeMerchRequestsResult Fail(string errorMessage)
             => new()
@@ -19,7 +19,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Queries.GetEmployeeMerchRequests
                 Message = errorMessage,
             };
 
-        public static GetEmployeeMerchRequestsResult Success(IEnumerable<MerchRequest> requests, string message)
+        public static GetEmployeeMerchRequestsResult Success(IEnumerable<IMerchRequest> requests, string message)
             => new()
             {
                 IsSuccess = true,

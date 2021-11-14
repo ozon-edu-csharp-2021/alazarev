@@ -31,7 +31,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.DomainEvents
             else if (notification.EventType == EmployeeEventType.Dismissal)
             {
                 var employee =
-                    await _employeeRepository.FindByEmailAsync(notification.Email, cancellationToken);
+                    await _employeeRepository.FindByEmailAsync(Email.Create(notification.Email), cancellationToken);
                 if (employee != null)
                 {
                     await _employeeRepository.DeleteAsync(employee, cancellationToken);

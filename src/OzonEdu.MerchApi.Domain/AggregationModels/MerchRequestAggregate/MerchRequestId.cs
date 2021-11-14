@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using OzonEdu.MerchApi.Domain.Models;
 
@@ -9,6 +10,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
 
         public MerchRequestId(int id)
         {
+            if (id < 1) throw new ArgumentException();
             Value = id;
         }
 

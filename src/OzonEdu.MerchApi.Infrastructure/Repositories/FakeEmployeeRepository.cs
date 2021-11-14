@@ -21,8 +21,8 @@ namespace OzonEdu.MerchApi.Infrastructure.Repositories
                 null));
         }
 
-        public Task<Employee> FindByEmailAsync(string email, CancellationToken cancellationToken = default)
-            => Task.FromResult(Items.FirstOrDefault(e => e.Email.Value.Equals(email)));
+        public Task<Employee> FindByEmailAsync(Email email, CancellationToken cancellationToken = default)
+            => Task.FromResult(Items.FirstOrDefault(e => e.Email.Equals(email)));
 
         public FakeEmployeeRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {

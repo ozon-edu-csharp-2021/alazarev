@@ -36,7 +36,8 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.Commands
             if (!validationResult.IsValid)
                 return CreateMerchRequestResult.Fail(validationResult.GetAggregateError("Произошла ошибка валидации"));
 
-            var request = await _merchRequestService.CreateMerchRequestAsync(command.EmployeeEmail, command.MerchType,
+            var request = await _merchRequestService.CreateMerchRequestAsync(Email.Create(command.EmployeeEmail),
+                command.MerchType,
                 command.MerchRequestMode, cancellationToken);
 
             if (request == null)

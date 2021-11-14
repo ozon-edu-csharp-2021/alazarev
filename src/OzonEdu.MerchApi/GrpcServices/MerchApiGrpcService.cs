@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Grpc.Core;
+using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.Domain.Contracts.DomainServices.MerchRequestService;
 using OzonEdu.MerchApi.Grpc;
@@ -32,7 +33,8 @@ namespace OzonEdu.MerchApi.GrpcServices
             var mappedRequest = _mapper.Map<CreateMerchRequest>(request);
 
             var result =
-                await _merchService.CreateMerchRequestAsync(mappedRequest.EmployeeEmail, mappedRequest.MerchType,
+                await _merchService.CreateMerchRequestAsync(Email.Create(mappedRequest.EmployeeEmail),
+                    mappedRequest.MerchType,
                     MerchRequestMode.ByRequest,
                     context.CancellationToken);
 
@@ -44,7 +46,7 @@ namespace OzonEdu.MerchApi.GrpcServices
             ServerCallContext context)
         {
             var result =
-                await _merchService.GetMerchInfoAsync(request.EmployeeEmail,
+                await _merchService.GetMerchInfoAsync(Email.Create(request.EmployeeEmail),
                     context.CancellationToken);
 
             return _mapper.Map<GetReceivingMerchInfoResponseGprc>(result);

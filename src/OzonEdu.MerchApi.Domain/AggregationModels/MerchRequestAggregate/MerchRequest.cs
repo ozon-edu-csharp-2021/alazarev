@@ -18,16 +18,20 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
         public DateTimeOffset StartedAt { get; private set; }
         public HumanResourceManagerId ManagerId { get; private set; }
         public EmployeeId EmployeeId { get; private set; }
-        public virtual MerchRequestStatus Status { get; private set; }
-        public virtual MerchType RequestedMerchType { get; private set; }
+        public MerchRequestStatus Status { get; private set; }
+        public MerchType RequestedMerchType { get; private set; }
         public MerchRequestMode Mode { get; private set; }
-        public virtual DateTimeOffset? ReservedAt { get; private set; }
+        public DateTimeOffset? ReservedAt { get; private set; }
 
         public IReadOnlyCollection<RequestMerchItem> Items => _items.AsReadOnly();
 
-        public MerchRequest(Employee employee, MerchRequestMode mode,
+        private MerchRequest(Employee employee, MerchRequestMode mode,
             DateTimeOffset startedAt)
         {
+            //если не инициализировали
+            if (startedAt == default) throw new IncorrectMerchRequestException();
+            //если дата указана в будущем
+            if (startedAt > DateTimeOffset.UtcNow) throw new IncorrectMerchRequestException();
             EmployeeId = employee.Id;
             Mode = mode;
             StartedAt = startedAt;
@@ -38,7 +42,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
             DateTimeOffset startedAt) => new(employee, mode, startedAt);
 
         public static MerchRequest Create(int id, Employee employee, MerchRequestMode mode,
-            DateTimeOffset startedAt) => new(employee, mode, startedAt) {Id = id};
+            DateTimeOffset startedAt) => new(employee, mode, startedAt) { Id = id };
 
         public void StartWork(MerchPack merchPack)
         {
@@ -55,7 +59,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
             AddDomainEvent(new RequestProcessedEvent(Id));
         }
 
-        public void CheckWithStock(IEnumerable<StockItem> stockItems)
+        public void UpdateItemStatusesFromStockAvailabilities(IEnumerable<StockItem> stockItems)
         {
             if (!Equals(Status, MerchRequestStatus.InProcess))
             {
@@ -65,7 +69,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
             foreach (var requestMerchItem in _items)
             {
                 var stockItem = stockItems.FirstOrDefault(i => i.SkuId == requestMerchItem.Sku.Value);
-                if (stockItem is {Quantity: > 0})
+                if (stockItem is { Quantity: > 0 })
                 {
                     requestMerchItem.ChangeStatus(RequestMerchItemStatus.InStock);
                 }
@@ -82,7 +86,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
             }
         }
 
-        public void CheckWithSupply(IEnumerable<StockItem> stockItems)
+        public void UpdateItemStatusesFromSupply(IEnumerable<StockItem> stockItems)
         {
             if (!Equals(Status, MerchRequestStatus.WaitingForSupply))
             {
@@ -95,7 +99,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
             foreach (var requestMerchItem in waitingForSupplyItems)
             {
                 var stockItem = stockItems.FirstOrDefault(i => i.SkuId == requestMerchItem.Sku.Value);
-                if (stockItem is {Quantity: > 0})
+                if (stockItem is { Quantity: > 0 })
                 {
                     requestMerchItem.ChangeStatus(RequestMerchItemStatus.InStock);
                     stockItem.Quantity--;

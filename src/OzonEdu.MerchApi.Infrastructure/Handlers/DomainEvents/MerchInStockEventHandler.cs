@@ -25,7 +25,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.DomainEvents
             var employee = await _employeeRepository.GetAsync(notification.EmployeeId.Value, cancellationToken);
             if (employee == null) throw new EmployeeNotFoundException();
 
-            await _messageBus.NotifyAsync(new EmailMessage(employee.Email, "Мерч появился на складе"));
+            await _messageBus.NotifyAsync(EmailMessage.Create(employee.Email, "Мерч появился на складе"));
         }
     }
 }

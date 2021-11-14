@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
+using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using OzonEdu.MerchApi.Domain.Contracts.DomainServices.MerchRequestService;
 using OzonEdu.MerchApi.Infrastructure.Commands.CreateMerchRequest;
 using OzonEdu.MerchApi.Infrastructure.Extensions;
@@ -33,7 +34,8 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.Queries
                 return GetEmployeeMerchRequestsResult.Fail(
                     validationResult.GetAggregateError("Произошла ошибка валидации"));
 
-            var requests = await _merchRequestService.GetMerchInfoAsync(request.EmployeeEmail, cancellationToken);
+            var requests =
+                await _merchRequestService.GetMerchInfoAsync(Email.Create(request.EmployeeEmail), cancellationToken);
 
             return GetEmployeeMerchRequestsResult.Success(requests, "Записи успешно получены");
         }

@@ -12,7 +12,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
 
         public RequestMerchItem(Sku sku)
         {
-            Sku = sku;
+            Sku = sku ?? throw new ArgumentNullException(nameof(sku));
             Status = RequestMerchItemStatus.NotVerified;
         }
 

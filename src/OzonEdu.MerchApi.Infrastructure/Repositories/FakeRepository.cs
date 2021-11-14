@@ -7,7 +7,7 @@ using OzonEdu.MerchApi.Domain.Models;
 
 namespace OzonEdu.MerchApi.Infrastructure.Repositories
 {
-    public class FakeRepository<TAggregationRoot> : IRepository<TAggregationRoot> where TAggregationRoot : Entity
+    public class FakeRepository<TAggregationRoot> : IRepository<TAggregationRoot> where TAggregationRoot : IEntity
     {
         public static readonly IList<TAggregationRoot> Items = new List<TAggregationRoot>();
 
@@ -44,7 +44,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Repositories
 
         public Task<TAggregationRoot> GetAsync(object id, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(Items.FirstOrDefault(e => e.Id == (int) id));
+            return Task.FromResult(Items.FirstOrDefault(e => e.Id == (int)id));
         }
 
         public Task DeleteAsync(TAggregationRoot entity, CancellationToken cancellationToken = default)

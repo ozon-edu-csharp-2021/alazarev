@@ -24,7 +24,7 @@ namespace OzonEdu.MerchApi.Tests.CommandHandlers
             var merchRequestService = new Mock<IMerchRequestService>();
             merchRequestService
                 .Setup(x
-                    => x.CreateMerchRequestAsync(It.IsAny<string>(), It.IsAny<MerchType>(),
+                    => x.CreateMerchRequestAsync(It.IsAny<Email>(), It.IsAny<MerchType>(),
                         It.IsAny<MerchRequestMode>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(MerchRequest.Create(employee, MerchRequestMode.Auto, DateTimeOffset.UtcNow));
 
@@ -47,7 +47,7 @@ namespace OzonEdu.MerchApi.Tests.CommandHandlers
             var merchRequestService = new Mock<IMerchRequestService>();
             merchRequestService
                 .Setup(x
-                    => x.CreateMerchRequestAsync(It.IsAny<string>(), It.IsAny<MerchType>(),
+                    => x.CreateMerchRequestAsync(It.IsAny<Email>(), It.IsAny<MerchType>(),
                         It.IsAny<MerchRequestMode>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(null as MerchRequest);
 

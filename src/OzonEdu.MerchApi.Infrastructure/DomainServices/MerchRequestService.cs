@@ -30,59 +30,60 @@ namespace OzonEdu.MerchApi.Infrastructure.DomainServices
             _merchRequestRepository = merchRequestRepository;
             _stockApiService = stockApiService;
         }
+        
 
-
-        public async Task CheckStockAsync(MerchRequest request, CancellationToken cancellationToken = default)
-        {
-            var skus = request.Items
-                .Where(i => !i.Status.Equals(RequestMerchItemStatus.InStock))
-                .Select(i => i.Sku.Value);
-            var result = await _stockApiService.CheckStockItemsAsync(skus, cancellationToken);
-            request.CheckWithStock(result);
-        }
-
-        public async Task<IEnumerable<MerchRequest>> GetMerchInfoAsync(string employeeEmail,
+        public async Task<IEnumerable<IMerchRequest>> GetMerchInfoAsync(Email employeeEmail,
             CancellationToken cancellationToken = default)
         {
             var employee = await _employeeRepository.FindByEmailAsync(employeeEmail, cancellationToken) ??
-                           throw new EmployeeNotFoundException(employeeEmail);
+                           throw new EmployeeNotFoundException(employeeEmail.Value);
             return await _merchRequestRepository.GetAllEmployeeRequestsAsync(employee.Id, cancellationToken);
         }
+        
 
-        public async Task ReserveStockAsync(MerchRequest request, CancellationToken cancellationToken = default)
-        {
-            var skus = request.Items.Select(i => i.Sku.Value);
-            var result = await _stockApiService.ReserveStockItemsAsync(skus, cancellationToken);
-            
-            request.Reserve(result, result ? DateTimeOffset.UtcNow : null);
-        }
-
-        public async Task<MerchRequest> CreateMerchRequestAsync(string employeeEmail, MerchType merchType,
+        public async Task<IMerchRequest> CreateMerchRequestAsync(Email employeeEmail, MerchType merchType,
             MerchRequestMode merchRequestMode,
             CancellationToken token = default)
         {
+            //берем сотрудника
             var employee = await _employeeRepository.FindByEmailAsync(employeeEmail, token) ??
-                           throw new EmployeeNotFoundException(employeeEmail);
+                           throw new EmployeeNotFoundException(employeeEmail.Value);
 
+            //берем мерчпак
             var merchPack = await _merchPackRepository.GetByMerchType(merchType, token) ??
                             throw new MerchPackNotFoundException();
 
+            //данный мерч доступен пользователю?
             var isMerchAvailable = await CheckIfMerchAvailableAsync(employee.Id, merchType, token);
 
             if (!isMerchAvailable) return null;
 
+            //TODO удлить. Это только для фейк репозитория
             var id = FakeMerchRequestRepository.Items.Count > 0
                 ? FakeMerchRequestRepository.Items.Max(i => i.Id) + 1
                 : 1;
 
+            //создаям заявку
             var request = MerchRequest.Create(id, employee, merchRequestMode, DateTimeOffset.UtcNow);
+            //устанавливаем заявке мерчпак и стартуем
             request.StartWork(merchPack);
 
-            await CheckStockAsync(request, token);
+            //запрашиваем наличие стоков на складе
+            var stockItemsAvailabilityResult = await _stockApiService.GetStockItemsAvailabilityAsync(
+                request.Items.Select(i => i.Sku.Value), token);
 
+            //обновляем статусы позиций в соответствии с наличием на складе
+            request.UpdateItemStatusesFromStockAvailabilities(stockItemsAvailabilityResult);
+
+            //если стоки в наличие (заявка не перешла в ожидание)
             if (request.Status.Equals(MerchRequestStatus.InProcess))
             {
-                await ReserveStockAsync(request, token);
+                //резервируем
+                var reserveResult =
+                    await _stockApiService.ReserveStockItemsAsync(request.Items.Select(i => i.Sku.Value), token);
+
+                //результат резервирования применяем к заявке
+                request.Reserve(reserveResult, reserveResult ? DateTimeOffset.UtcNow : null);
             }
 
             return request;

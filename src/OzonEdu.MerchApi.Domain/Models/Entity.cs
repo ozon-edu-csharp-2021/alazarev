@@ -4,7 +4,7 @@ using MediatR;
 
 namespace OzonEdu.MerchApi.Domain.Models
 {
-    public abstract class Entity
+    public abstract class Entity : IEntity
     {
         int? _requestedHashCode;
         public virtual int Id { get; protected set; }

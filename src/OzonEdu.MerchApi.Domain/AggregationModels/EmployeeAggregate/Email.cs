@@ -10,12 +10,12 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate
     {
         public string Value { get; }
 
-        public Email(string email)
+        private Email(string email)
         {
             if (!Regex.IsMatch(email ?? throw new ArgumentNullException(nameof(email)),
                 @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
                 RegexOptions.IgnoreCase))
-                throw new InvalidEmailException("Неправильный формат адреса электронной почты");
+                throw new InvalidEmailException("Wrong email format");
 
             Value = email;
         }

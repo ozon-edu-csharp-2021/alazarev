@@ -15,7 +15,7 @@ namespace OzonEdu.MerchApi.Domain.Contracts.StockApiService
         /// <param name="skus"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<IEnumerable<StockItem>> CheckStockItemsAsync(IEnumerable<long> skus,
+        Task<IEnumerable<StockItem>> GetStockItemsAvailabilityAsync(IEnumerable<long> skus,
             CancellationToken cancellationToken = default);
 
         /// <summary>

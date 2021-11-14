@@ -41,16 +41,17 @@ namespace OzonEdu.MerchApi.Tests.DomainServices
             var employee = new Employee(Email.Create("qwe@qwe.ru"), PersonName.Create("Alex", "Lazarev"), null, null);
             var startedAt = new DateTimeOffset(2001, 10, 10, 0, 0, 0, TimeSpan.Zero);
             var merchRequestRepository = new Mock<IMerchRequestRepository>();
-            var merchRequest = new Mock<MerchRequest>(employee, MerchRequestMode.ByRequest, startedAt);
+            var merchRequest = new Mock<IMerchRequest>();
 
             merchRequest.SetupGet(r => r.RequestedMerchType).Returns(MerchType.VeteranPack);
             merchRequest.SetupGet(r => r.Status).Returns(MerchRequestStatus.Reserved);
             merchRequest.SetupGet(r => r.ReservedAt).Returns(DateTimeOffset.UtcNow.AddYears(-2));
+            merchRequest.SetupGet(r => r.EmployeeId).Returns(new EmployeeId(1));
 
             merchRequestRepository
                 .Setup(x
                     => x.GetAllEmployeeRequestsAsync(1, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new MerchRequest[] {merchRequest.Object});
+                .ReturnsAsync(new IMerchRequest[] { merchRequest.Object });
 
 
             var merchRequestService = new MerchRequestService(null, null,
@@ -66,8 +67,9 @@ namespace OzonEdu.MerchApi.Tests.DomainServices
                 null);
             var startedAt = new DateTimeOffset(2001, 10, 10, 0, 0, 0, TimeSpan.Zero);
             var merchRequestRepository = new Mock<IMerchRequestRepository>();
-            var merchRequest = new Mock<MerchRequest>(employee, MerchRequestMode.ByRequest, startedAt);
+            var merchRequest = new Mock<IMerchRequest>();
 
+            merchRequest.SetupGet(r => r.EmployeeId).Returns(new EmployeeId(1));
             merchRequest.SetupGet(r => r.RequestedMerchType).Returns(MerchType.VeteranPack);
             merchRequest.SetupGet(r => r.Status).Returns(MerchRequestStatus.Reserved);
             merchRequest.SetupGet(r => r.ReservedAt).Returns(DateTimeOffset.UtcNow.AddMonths(-10));
@@ -75,7 +77,7 @@ namespace OzonEdu.MerchApi.Tests.DomainServices
             merchRequestRepository
                 .Setup(x
                     => x.GetAllEmployeeRequestsAsync(1, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new MerchRequest[] {merchRequest.Object});
+                .ReturnsAsync(new IMerchRequest[] { merchRequest.Object });
 
             var merchRequestService = new MerchRequestService(null, null,
                 merchRequestRepository.Object, null);
@@ -89,8 +91,8 @@ namespace OzonEdu.MerchApi.Tests.DomainServices
             var employeeRepository = new Mock<IEmployeeRepository>();
             employeeRepository
                 .Setup(x
-                    => x.FindByEmailAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Employee) null);
+                    => x.FindByEmailAsync(It.IsAny<Email>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Employee)null);
 
 
             var merchRequestService = new MerchRequestService(employeeRepository.Object, null,
@@ -98,12 +100,11 @@ namespace OzonEdu.MerchApi.Tests.DomainServices
 
             await Assert.ThrowsAsync<EmployeeNotFoundException>(async () =>
                 await merchRequestService.CreateMerchRequestAsync(
-                    "not@found_emplo.ee", MerchType.WelcomePack,
+                    Email.Create("not@found_emplo.ee"), MerchType.WelcomePack,
                     MerchRequestMode.ByRequest));
         }
 
         [Fact]
-        
         public async Task CreateMerchRequestAsync_MerchPackNotFound()
         {
             var employee = new Employee(1, Email.Create("employee@who.ok"), PersonName.Create("Alex", "Lazarev"), null,
@@ -112,7 +113,7 @@ namespace OzonEdu.MerchApi.Tests.DomainServices
             var employeeRepository = new Mock<IEmployeeRepository>();
             employeeRepository
                 .Setup(x
-                    => x.FindByEmailAsync(employee.Email.Value, It.IsAny<CancellationToken>()))
+                    => x.FindByEmailAsync(employee.Email, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(employee);
 
             var merchPackRepository = new Mock<IMerchPackRepository>();
@@ -126,7 +127,7 @@ namespace OzonEdu.MerchApi.Tests.DomainServices
 
             await Assert.ThrowsAsync<MerchPackNotFoundException>(async () =>
                 await merchRequestService.CreateMerchRequestAsync(
-                    "employee@who.ok", MerchType.WelcomePack,
+                    Email.Create("employee@who.ok"), MerchType.WelcomePack,
                     MerchRequestMode.ByRequest));
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using CSharpCourse.Core.Lib.Enums;
 using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
@@ -15,6 +16,12 @@ namespace OzonEdu.MerchApi.Tests.AggregationRoots
 {
     public class MerchRequestTests
     {
+        public static object[][] Create_IncorrectStartAt_Data =
+        {
+            new object[] { default(DateTimeOffset) },
+            new object[] { DateTimeOffset.UtcNow.AddDays(1) }
+        };
+
         [Fact]
         public void Create_StatusIsCreated()
         {
@@ -47,7 +54,7 @@ namespace OzonEdu.MerchApi.Tests.AggregationRoots
         {
             var request = Create();
             StartWork(request);
-            request.CheckWithStock(request.Items.Select(i => new StockItem
+            request.UpdateItemStatusesFromStockAvailabilities(request.Items.Select(i => new StockItem
             {
                 SkuId = i.Sku.Value,
                 Quantity = 0
@@ -85,6 +92,18 @@ namespace OzonEdu.MerchApi.Tests.AggregationRoots
             Assert.Equal(request.Status, MerchRequestStatus.Error);
         }
 
+        [Theory]
+        [MemberData(nameof(Create_IncorrectStartAt_Data))]
+        public void Create_IncorrectStartAt(DateTimeOffset startedAt)
+        {
+            var employee = new Employee(Email.Create("qwe@qwe.ru"), PersonName.Create("Alex", "Lazarev"), null, null);
+
+            Assert.Throws<IncorrectMerchRequestException>(() => MerchRequest.Create(
+                employee,
+                MerchRequestMode.ByRequest,
+                startedAt));
+        }
+
         [Fact]
         public void Reserve_WhenIncorrectStatus()
         {
@@ -114,7 +133,7 @@ namespace OzonEdu.MerchApi.Tests.AggregationRoots
 
         private void CheckWithStockWhenAllInStock(MerchRequest request)
         {
-            request.CheckWithStock(request.Items.Select(i => new StockItem
+            request.UpdateItemStatusesFromStockAvailabilities(request.Items.Select(i => new StockItem
             {
                 SkuId = i.Sku.Value,
                 Quantity = 10

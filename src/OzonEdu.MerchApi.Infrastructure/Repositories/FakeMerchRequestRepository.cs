@@ -7,15 +7,17 @@ using OzonEdu.MerchApi.Domain.Contracts;
 
 namespace OzonEdu.MerchApi.Infrastructure.Repositories
 {
-    public class FakeMerchRequestRepository : FakeRepository<MerchRequest>, IMerchRequestRepository
+    public class FakeMerchRequestRepository : FakeRepository<IMerchRequest>, IMerchRequestRepository
     {
-        public Task<IEnumerable<MerchRequest>> GetAllEmployeeRequestsAsync(int employeeId,
+        public Task<IEnumerable<IMerchRequest>> GetAllEmployeeRequestsAsync(int employeeId,
             CancellationToken cancellationToken = default)
         {
-            return Task.FromResult(Items.Where(r => r.EmployeeId.Value == employeeId));
+            var qwe = Items.Where(r => r.EmployeeId.Value == employeeId);
+                
+            return Task.FromResult(Items.Where(r => r.EmployeeId.Value == employeeId).Cast<IMerchRequest>());
         }
 
-        public Task<IEnumerable<MerchRequest>> GetAllWaitingForSupplyRequestsByModeAsync(MerchRequestMode mode,
+        public Task<IEnumerable<IMerchRequest>> GetAllWaitingForSupplyRequestsByModeAsync(MerchRequestMode mode,
             CancellationToken cancellationToken = default)
         {
             return Task.FromResult(Items.Where(r =>

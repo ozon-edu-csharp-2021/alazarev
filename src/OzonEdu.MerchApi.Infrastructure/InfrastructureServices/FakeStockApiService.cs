@@ -8,7 +8,7 @@ namespace OzonEdu.MerchApi.Infrastructure.InfrastructureServices
 {
     public class FakeStockApiService : IStockApiService
     {
-        public Task<IEnumerable<StockItem>> CheckStockItemsAsync(IEnumerable<long> skus,
+        public Task<IEnumerable<StockItem>> GetStockItemsAvailabilityAsync(IEnumerable<long> skus,
             CancellationToken cancellationToken = default)
         {
             return Task.FromResult(skus.Select(id => new StockItem() {SkuId = id, Quantity = 99}));

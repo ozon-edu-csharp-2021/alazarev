@@ -8,7 +8,7 @@ namespace OzonEdu.MerchApi.Domain.Contracts
     /// Базовый интерфейс репозитория
     /// </summary>
     /// <typeparam name="TAggregationRoot">Объект сущности для управления</typeparam>
-    public interface IRepository<TAggregationRoot> where TAggregationRoot : Entity
+    public interface IRepository<TAggregationRoot> where TAggregationRoot : IEntity
 
     {
         /// <summary>
