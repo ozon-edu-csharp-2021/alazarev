@@ -21,7 +21,7 @@ namespace OzonEdu.MerchApi.HttpClient
             _httpClient = clientFactory.CreateClient(HttpClientName);
         }
 
-        public async Task<RequestMerchResponse> RequestMerch(RequestMerchRequest request,
+        public async Task<RequestMerchResponse> RequestMerch(CreateMerchRequest request,
             CancellationToken cancellationToken = default)
         {
             using var response = await _httpClient.PostAsJsonAsync(RequestMerchRequestUrl, request, cancellationToken);
@@ -30,12 +30,12 @@ namespace OzonEdu.MerchApi.HttpClient
             return JsonSerializer.Deserialize<RequestMerchResponse>(body);
         }
 
-        public async Task<GetReceivingMerchInfoResponse> GetReceivingMerchInfo(GetReceivingMerchInfoRequest request,
+        public async Task<GetMerchInfoResponse> GetMerchInfo(string employeeEmail,
             CancellationToken cancellationToken = default)
         {
             var response =
-                await _httpClient.GetFromJsonAsync<GetReceivingMerchInfoResponse>(
-                    string.Format(GetReceivingMerchInfoRequestUrl, request.EmployeeId),
+                await _httpClient.GetFromJsonAsync<GetMerchInfoResponse>(
+                    string.Format(GetReceivingMerchInfoRequestUrl, employeeEmail),
                     cancellationToken);
             return response;
         }

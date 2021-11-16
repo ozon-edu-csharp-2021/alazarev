@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using OzonEdu.MerchApi.GrpcServices;
+using OzonEdu.MerchApi.Infrastructure;
+using OzonEdu.MerchApi.Infrastructure.Extensions;
 using OzonEdu.MerchApi.Mappers;
-using OzonEdu.MerchApi.Services;
-using OzonEdu.MerchApi.Services.Interfaces;
 
 namespace OzonEdu.MerchApi
 {
@@ -12,7 +12,7 @@ namespace OzonEdu.MerchApi
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IMerchService, MerchService>();
+            services.AddInfrastructure(MerchApiInfrastructure.Marker);
             services.AddAutoMapper(cfg => cfg.AddProfile<GprcMappingProfile>());
         }
 

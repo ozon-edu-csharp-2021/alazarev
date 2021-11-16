@@ -6,12 +6,12 @@ package MerchApi;
 import "google/protobuf/timestamp.proto";
 
 service MerchApiGrpc {
-  rpc GetReceivingMerchInfo (GetReceivingMerchInfoRequest) returns (GetReceivingMerchInfoResponse);
+  rpc GetReceivingMerchInfo (GetMerchInfoRequest) returns (GetMerchInfoResponse);
   rpc RequestMerch (RequestMerchRequest) returns (RequestMerchResponse);
 }
 
 message RequestMerchRequest {
-  int32 employee_id = 1;
+  string employeeEmail = 1;
   MerchType merch_type = 2;
 }
 
@@ -19,11 +19,11 @@ message RequestMerchResponse{
   RequestMerchStatus status = 1;
 }
 
-message GetReceivingMerchInfoRequest {
-  int32 employee_id = 1;
+message GetMerchInfoRequest {
+  string employeeEmail = 1;
 }
 
-message GetReceivingMerchInfoResponse {
+message GetMerchInfoResponse {
   repeated MerchInfo items = 1;
 }
 
@@ -42,7 +42,10 @@ enum MerchType {
 }
 
 enum RequestMerchStatus {
-  RESERVED = 0;
-  ALREADY_RECEIVED = 1;
-  NOT_AVAILABLE = 2;
+  CREATED = 0;
+  IN_PROCESS = 1;
+  WAITING_FOR_SUPPLY = 2;
+  RESERVED = 3;
+  INFORMED = 4;
+  ERROR = 5;
 }

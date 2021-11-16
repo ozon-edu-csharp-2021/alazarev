@@ -1,10 +1,13 @@
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.HttpModels;
-using OzonEdu.MerchApi.Mappers;
-using OzonEdu.MerchApi.Services.Interfaces;
+using OzonEdu.MerchApi.Infrastructure.Commands.CreateMerchRequest;
+using OzonEdu.MerchApi.Infrastructure.Queries.GetEmployeeMerchRequests;
 
 namespace OzonEdu.MerchApi.Controllers.V1
 {
@@ -12,29 +15,30 @@ namespace OzonEdu.MerchApi.Controllers.V1
     [Route("v1/api/[controller]")]
     public class MerchController : ControllerBase
     {
-        private readonly IMerchService _merchService;
-
-        public MerchController(IMerchService merchService)
+        private readonly IMediator _mediator;
+        public MerchController(IMediator mediator)
         {
-            _merchService = merchService;
+            _mediator = mediator;
         }
 
-        [HttpPost("request")]
+        [HttpPost("create")]
         public async Task<ActionResult<RequestMerchResponse>> RequestMerch(
-            [FromBody] RequestMerchRequest request,
+            [FromBody] CreateMerchRequest request,
             CancellationToken token)
         {
-            var response = await _merchService.RequestMerchAsync(request, token);
-
+            var createMerchRequestCommand =
+                new CreateMerchRequestCommand(request.EmployeeEmail, request.MerchType, MerchRequestMode.ByRequest);
+            var response = await _mediator.Send(createMerchRequestCommand, token);
             return Ok(response);
         }
 
-        [HttpGet("getinfo/{employeeId:int}")]
-        public async Task<ActionResult<GetReceivingMerchInfoResponse>> GetReceivingMerchInfo(
-            GetReceivingMerchInfoRequest request,
-            CancellationToken token)
+        [HttpGet("check/{employeeEmail}")]
+        public async Task<ActionResult<GetMerchInfoResponse>> GetMerchInfo(
+            string employeeEmail, CancellationToken token)
         {
-            var response = await _merchService.GetReceivingMerchInfoAsync(request, token);
+            
+            var query = new GetEmployeeMerchRequestsQuery(employeeEmail);
+            var response = await _mediator.Send(query, token);
             return Ok(response);
         }
     }
