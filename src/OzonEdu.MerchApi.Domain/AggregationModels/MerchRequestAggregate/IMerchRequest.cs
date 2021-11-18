@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using CSharpCourse.Core.Lib.Enums;
 using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
-using OzonEdu.MerchApi.Domain.AggregationModels.HumanResourceManagerAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Contracts.StockApiService;
 using OzonEdu.MerchApi.Domain.Models;
 
@@ -12,7 +12,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
     public interface IMerchRequest : IEntity
     {
         DateTimeOffset StartedAt { get; }
-        HumanResourceManagerId ManagerId { get; }
+        public Email ManagerEmail { get; }
         EmployeeId EmployeeId { get; }
         MerchRequestStatus Status { get; }
         MerchType RequestedMerchType { get; }

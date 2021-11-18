@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CSharpCourse.Core.Lib.Enums;
 using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
-using OzonEdu.MerchApi.Domain.AggregationModels.HumanResourceManagerAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
@@ -99,9 +98,10 @@ namespace OzonEdu.MerchApi.Tests.AggregationRoots
             var employee = new Employee(Email.Create("qwe@qwe.ru"), PersonName.Create("Alex", "Lazarev"), null, null);
 
             Assert.Throws<IncorrectMerchRequestException>(() => MerchRequest.Create(
-                employee,
+                new EmployeeId(employee.Id),
                 MerchRequestMode.ByRequest,
-                startedAt));
+                startedAt,
+                Email.Create("manager@ozon.ru")));
         }
 
         [Fact]
@@ -115,15 +115,16 @@ namespace OzonEdu.MerchApi.Tests.AggregationRoots
         {
             var employee = new Employee(Email.Create("qwe@qwe.ru"), PersonName.Create("Alex", "Lazarev"), null, null);
             var request = MerchRequest.Create(
-                employee,
+                new EmployeeId(employee.Id),
                 MerchRequestMode.ByRequest,
-                new DateTimeOffset(2001, 10, 10, 0, 0, 0, TimeSpan.Zero));
+                new DateTimeOffset(2001, 10, 10, 0, 0, 0, TimeSpan.Zero),
+                Email.Create("manager@ozon.ru"));
             return request;
         }
 
         private void StartWork(MerchRequest request)
         {
-            var merchPack = new MerchPack(MerchType.WelcomePack, new HumanResourceManagerId(0));
+            var merchPack = new MerchPack(MerchType.WelcomePack);
             merchPack.AddPosition(new MerchItem(new Sku(1), new Name("TShirt"), MerchCategory.TShirt));
             merchPack.AddPosition(new MerchItem(new Sku(2), new Name("Bag"), MerchCategory.Bag));
             merchPack.AddPosition(new MerchItem(new Sku(3), new Name("Socks"), MerchCategory.Socks));

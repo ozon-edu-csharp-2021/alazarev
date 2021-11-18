@@ -5,6 +5,7 @@ using MediatR;
 using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Contracts;
 using OzonEdu.MerchApi.Domain.Contracts.DomainServices.MerchRequestService;
 using OzonEdu.MerchApi.Infrastructure.Commands.CreateMerchRequest;
@@ -37,6 +38,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.Commands
                 return CreateMerchRequestResult.Fail(validationResult.GetAggregateError("Произошла ошибка валидации"));
 
             var request = await _merchRequestService.CreateMerchRequestAsync(Email.Create(command.EmployeeEmail),
+                Email.Create(command.ManagerEmail),
                 command.MerchType,
                 command.MerchRequestMode, cancellationToken);
 
@@ -44,8 +46,6 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.Commands
                 return CreateMerchRequestResult.Fail("Невозможно создать еще одну заявку с таким типом");
 
             request = await _merchRequestRepository.CreateAsync(request, cancellationToken);
-
-            await _merchRequestRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
             return
                 CreateMerchRequestResult.Success(request.Status, request.Id, "Заявка успешно создалась");

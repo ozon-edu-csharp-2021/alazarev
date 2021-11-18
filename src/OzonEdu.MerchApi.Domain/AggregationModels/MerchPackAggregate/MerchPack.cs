@@ -2,31 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using CSharpCourse.Core.Lib.Enums;
-using OzonEdu.MerchApi.Domain.AggregationModels.HumanResourceManagerAggregate;
 using OzonEdu.MerchApi.Domain.Models;
 
 namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate
 {
-    public sealed class MerchPack : Entity, IAggregationRoot, IEnumerable<MerchItem>
+    public sealed class MerchPack : Entity, IAggregationRoot
     {
         private List<MerchItem> _positions;
 
-        /// <summary>
-        /// Ответственный за мерч менеджер
-        ///
-        /// Считаем, что за каждым паком числится ответственный менеджер
-        /// (возможно менеджер должен быть закреплен за сотрудником)
-        /// </summary>
-        public HumanResourceManagerId HumanResourceManagerId { get; private set; }
-
         public MerchType Type { get; private set; }
 
-        public MerchPack(MerchType type, HumanResourceManagerId humanResourceManagerId)
+        public IReadOnlyCollection<MerchItem> Positions => _positions.AsReadOnly();
+
+        public MerchPack(MerchType type)
         {
             Type = type;
-            HumanResourceManagerId = humanResourceManagerId;
             _positions = new List<MerchItem>();
         }
+
+        public MerchPack(int id, MerchType type, IEnumerable<MerchItem> merchItems)
+        {
+            Id = id;
+            Type = type;
+            _positions = new List<MerchItem>(merchItems);
+        }
+
 
         public void AddPosition(MerchItem position)
         {
@@ -46,9 +46,6 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate
         {
             _positions.Clear();
         }
-
-        public IEnumerator<MerchItem> GetEnumerator() => _positions.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => _positions.GetEnumerator();
+        
     }
 }

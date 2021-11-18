@@ -4,7 +4,7 @@ using OzonEdu.MerchApi.Domain.Models;
 
 namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate
 {
-    public class MerchItem : Entity
+    public class MerchItem
     {
         public Name Name { get; private set; }
         public Sku Sku { get; private set; }

@@ -7,10 +7,12 @@ using CSharpCourse.Core.Lib.Enums;
 using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Contracts;
 using OzonEdu.MerchApi.Domain.Contracts.DomainServices.MerchRequestService;
 using OzonEdu.MerchApi.Domain.Contracts.StockApiService;
 using OzonEdu.MerchApi.Domain.Exceptions;
+using OzonEdu.MerchApi.Infrastructure.Persistence.Repositories;
 using OzonEdu.MerchApi.Infrastructure.Repositories;
 
 namespace OzonEdu.MerchApi.Infrastructure.DomainServices
@@ -30,18 +32,19 @@ namespace OzonEdu.MerchApi.Infrastructure.DomainServices
             _merchRequestRepository = merchRequestRepository;
             _stockApiService = stockApiService;
         }
-        
 
-        public async Task<IEnumerable<IMerchRequest>> GetMerchInfoAsync(Email employeeEmail,
+
+        public async Task<IEnumerable<MerchRequest>> GetMerchInfoAsync(Email employeeEmail,
             CancellationToken cancellationToken = default)
         {
             var employee = await _employeeRepository.FindByEmailAsync(employeeEmail, cancellationToken) ??
                            throw new EmployeeNotFoundException(employeeEmail.Value);
             return await _merchRequestRepository.GetAllEmployeeRequestsAsync(employee.Id, cancellationToken);
         }
-        
 
-        public async Task<IMerchRequest> CreateMerchRequestAsync(Email employeeEmail, MerchType merchType,
+
+        public async Task<MerchRequest> CreateMerchRequestAsync(Email employeeEmail, Email managerEmail,
+            MerchType merchType,
             MerchRequestMode merchRequestMode,
             CancellationToken token = default)
         {
@@ -58,13 +61,9 @@ namespace OzonEdu.MerchApi.Infrastructure.DomainServices
 
             if (!isMerchAvailable) return null;
 
-            //TODO удлить. Это только для фейк репозитория
-            var id = FakeMerchRequestRepository.Items.Count > 0
-                ? FakeMerchRequestRepository.Items.Max(i => i.Id) + 1
-                : 1;
-
             //создаям заявку
-            var request = MerchRequest.Create(id, employee, merchRequestMode, DateTimeOffset.UtcNow);
+            var request = MerchRequest.Create(new EmployeeId(employee.Id), merchRequestMode, DateTimeOffset.UtcNow,
+                managerEmail);
             //устанавливаем заявке мерчпак и стартуем
             request.StartWork(merchPack);
 

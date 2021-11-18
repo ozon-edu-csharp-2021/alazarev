@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using CSharpCourse.Core.Lib.Enums;
 using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
-using OzonEdu.MerchApi.Domain.AggregationModels.HumanResourceManagerAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Contracts.StockApiService;
 using OzonEdu.MerchApi.Domain.Events;
 using OzonEdu.MerchApi.Domain.Exceptions;
@@ -16,7 +16,8 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
     {
         private List<RequestMerchItem> _items = new();
         public DateTimeOffset StartedAt { get; private set; }
-        public HumanResourceManagerId ManagerId { get; private set; }
+
+        public Email ManagerEmail { get; private set; }
         public EmployeeId EmployeeId { get; private set; }
         public MerchRequestStatus Status { get; private set; }
         public MerchType RequestedMerchType { get; private set; }
@@ -25,24 +26,35 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
 
         public IReadOnlyCollection<RequestMerchItem> Items => _items.AsReadOnly();
 
-        private MerchRequest(Employee employee, MerchRequestMode mode,
-            DateTimeOffset startedAt)
+        private MerchRequest(EmployeeId employeeId, MerchRequestMode mode,
+            DateTimeOffset startedAt, Email managerEmail)
         {
             //если не инициализировали
             if (startedAt == default) throw new IncorrectMerchRequestException();
             //если дата указана в будущем
             if (startedAt > DateTimeOffset.UtcNow) throw new IncorrectMerchRequestException();
-            EmployeeId = employee.Id;
+            EmployeeId = employeeId;
             Mode = mode;
             StartedAt = startedAt;
+            ManagerEmail = managerEmail;
             Status = MerchRequestStatus.Created;
         }
 
-        public static MerchRequest Create(Employee employee, MerchRequestMode mode,
-            DateTimeOffset startedAt) => new(employee, mode, startedAt);
+        public static MerchRequest Create(EmployeeId employeeId, MerchRequestMode mode,
+            DateTimeOffset startedAt, Email managerEmail) => new(employeeId, mode, startedAt, managerEmail);
 
-        public static MerchRequest Create(int id, Employee employee, MerchRequestMode mode,
-            DateTimeOffset startedAt) => new(employee, mode, startedAt) { Id = id };
+        public static MerchRequest Create(int id, EmployeeId employeeId, MerchRequestMode mode,
+            DateTimeOffset startedAt, Email managerEmail) => new(employeeId, mode, startedAt, managerEmail) { Id = id };
+
+        public static MerchRequest Create(int id, EmployeeId employeeId, MerchRequestMode mode,
+            DateTimeOffset startedAt, Email managerEmail, MerchType requestedMerchType, MerchRequestStatus status, DateTimeOffset? reservedAt) =>
+            new(employeeId, mode, startedAt, managerEmail)
+            {
+                Id = id,
+                Status = status,
+                ReservedAt = reservedAt,
+                RequestedMerchType = requestedMerchType
+            };
 
         public void StartWork(MerchPack merchPack)
         {
@@ -52,9 +64,8 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
             }
 
             RequestedMerchType = merchPack.Type;
-            ManagerId = merchPack.HumanResourceManagerId;
 
-            _items.AddRange(merchPack.Select(i => new RequestMerchItem(i.Sku)));
+            _items.AddRange(merchPack.Positions.Select(i => new RequestMerchItem(i.Sku)));
             Status = MerchRequestStatus.InProcess;
             AddDomainEvent(new RequestProcessedEvent(Id));
         }

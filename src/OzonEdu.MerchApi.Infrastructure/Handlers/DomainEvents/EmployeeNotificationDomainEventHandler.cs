@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CSharpCourse.Core.Lib.Enums;
 using MediatR;
 using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Events;
 
 namespace OzonEdu.MerchApi.Infrastructure.Handlers.DomainEvents
@@ -25,8 +26,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.DomainEvents
                 // Возможно за этой информацией Merch Api будем сам лазить в сервис сотрудников
                 await _employeeRepository.CreateAsync(new Employee(Email.Create(notification.Email),
                     PersonName.ParseFromFullName(notification.EmployeeName), null, null), cancellationToken);
-
-                await _employeeRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+                
             }
             else if (notification.EventType == EmployeeEventType.Dismissal)
             {
@@ -35,7 +35,6 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.DomainEvents
                 if (employee != null)
                 {
                     await _employeeRepository.DeleteAsync(employee, cancellationToken);
-                    await _employeeRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
                     return;
                 }
             }
