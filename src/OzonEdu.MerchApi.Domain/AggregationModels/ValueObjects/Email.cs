@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using OzonEdu.MerchApi.Domain.Exceptions;
 using OzonEdu.MerchApi.Domain.Models;
 
-namespace OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate
+namespace OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects
 {
     public class Email : ValueObject
     {

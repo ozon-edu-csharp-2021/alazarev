@@ -6,6 +6,7 @@ using Moq;
 using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Contracts.StockApiService;
 using OzonEdu.MerchApi.Domain.Exceptions;
 using OzonEdu.MerchApi.Infrastructure.DomainServices;
@@ -41,17 +42,16 @@ namespace OzonEdu.MerchApi.Tests.DomainServices
             var employee = new Employee(Email.Create("qwe@qwe.ru"), PersonName.Create("Alex", "Lazarev"), null, null);
             var startedAt = new DateTimeOffset(2001, 10, 10, 0, 0, 0, TimeSpan.Zero);
             var merchRequestRepository = new Mock<IMerchRequestRepository>();
-            var merchRequest = new Mock<IMerchRequest>();
 
-            merchRequest.SetupGet(r => r.RequestedMerchType).Returns(MerchType.VeteranPack);
-            merchRequest.SetupGet(r => r.Status).Returns(MerchRequestStatus.Reserved);
-            merchRequest.SetupGet(r => r.ReservedAt).Returns(DateTimeOffset.UtcNow.AddYears(-2));
-            merchRequest.SetupGet(r => r.EmployeeId).Returns(new EmployeeId(1));
+            var request = MerchRequest.Create(1, new EmployeeId(1), MerchRequestMode.ByRequest,
+                DateTimeOffset.Now.AddDays(-10),
+                Email.Create("qwe@qwe.ru"), MerchType.VeteranPack, MerchRequestStatus.Reserved,
+                DateTimeOffset.UtcNow.AddYears(-2));
 
             merchRequestRepository
                 .Setup(x
                     => x.GetAllEmployeeRequestsAsync(1, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new IMerchRequest[] { merchRequest.Object });
+                .ReturnsAsync(new MerchRequest[] { request });
 
 
             var merchRequestService = new MerchRequestService(null, null,
@@ -67,17 +67,15 @@ namespace OzonEdu.MerchApi.Tests.DomainServices
                 null);
             var startedAt = new DateTimeOffset(2001, 10, 10, 0, 0, 0, TimeSpan.Zero);
             var merchRequestRepository = new Mock<IMerchRequestRepository>();
-            var merchRequest = new Mock<IMerchRequest>();
-
-            merchRequest.SetupGet(r => r.EmployeeId).Returns(new EmployeeId(1));
-            merchRequest.SetupGet(r => r.RequestedMerchType).Returns(MerchType.VeteranPack);
-            merchRequest.SetupGet(r => r.Status).Returns(MerchRequestStatus.Reserved);
-            merchRequest.SetupGet(r => r.ReservedAt).Returns(DateTimeOffset.UtcNow.AddMonths(-10));
+            var request = MerchRequest.Create(1, new EmployeeId(1), MerchRequestMode.ByRequest,
+                DateTimeOffset.Now.AddDays(-10),
+                Email.Create("qwe@qwe.ru"), MerchType.VeteranPack, MerchRequestStatus.Reserved,
+                DateTimeOffset.UtcNow.AddMonths(-10));
 
             merchRequestRepository
                 .Setup(x
                     => x.GetAllEmployeeRequestsAsync(1, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new IMerchRequest[] { merchRequest.Object });
+                .ReturnsAsync(new MerchRequest[] { request });
 
             var merchRequestService = new MerchRequestService(null, null,
                 merchRequestRepository.Object, null);
@@ -100,7 +98,7 @@ namespace OzonEdu.MerchApi.Tests.DomainServices
 
             await Assert.ThrowsAsync<EmployeeNotFoundException>(async () =>
                 await merchRequestService.CreateMerchRequestAsync(
-                    Email.Create("not@found_emplo.ee"), MerchType.WelcomePack,
+                    Email.Create("not@found_emplo.ee"), Email.Create("not@found_emplo.ee"), MerchType.WelcomePack,
                     MerchRequestMode.ByRequest));
         }
 
@@ -127,7 +125,7 @@ namespace OzonEdu.MerchApi.Tests.DomainServices
 
             await Assert.ThrowsAsync<MerchPackNotFoundException>(async () =>
                 await merchRequestService.CreateMerchRequestAsync(
-                    Email.Create("employee@who.ok"), MerchType.WelcomePack,
+                    Email.Create("employee@who.ok"), Email.Create("employee@who.ok"), MerchType.WelcomePack,
                     MerchRequestMode.ByRequest));
         }
     }

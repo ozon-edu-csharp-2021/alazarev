@@ -1,6 +1,7 @@
 using AutoMapper;
 using CSharpCourse.Core.Lib.Events;
 using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Events;
 
 namespace OzonEdu.MerchApi.Infrastructure.Mappers

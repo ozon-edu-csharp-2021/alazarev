@@ -1,6 +1,7 @@
-﻿using OzonEdu.MerchApi.Domain.Models;
+﻿using System;
+using OzonEdu.MerchApi.Domain.Models;
 
-namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate
+namespace OzonEdu.MerchApi.Domain.AggregationModels.Enums
 {
     public class ClothingSize : Enumeration
     {
@@ -14,5 +15,16 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate
         public ClothingSize(int id, string name) : base(id, name)
         {
         }
+
+        public static ClothingSize ParseFromInt(int id) => id switch
+        {
+            1 => XS,
+            2 => S,
+            3 => M,
+            4 => L,
+            5 => XL,
+            6 => XXL,
+            _ => throw new Exception("Unknow id")
+        };
     }
 }

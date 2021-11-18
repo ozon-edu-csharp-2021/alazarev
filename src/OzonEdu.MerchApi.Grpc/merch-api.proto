@@ -12,7 +12,8 @@ service MerchApiGrpc {
 
 message RequestMerchRequest {
   string employeeEmail = 1;
-  MerchType merch_type = 2;
+  string managerEmail = 2;
+  MerchType merch_type = 3;
 }
 
 message RequestMerchResponse{

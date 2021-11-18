@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using OzonEdu.MerchApi.Domain.Contracts;
 using OzonEdu.MerchApi.Domain.Models;
 
-namespace OzonEdu.MerchApi.Infrastructure.Repositories
+namespace OzonEdu.MerchApi.Infrastructure.Persistence.Repositories
 {
-    public class FakeRepository<TAggregationRoot> : IRepository<TAggregationRoot> where TAggregationRoot : IEntity
+    public class FakeRepository<TEntity> : IRepository<TEntity> where TEntity : Entity
     {
-        public static readonly IList<TAggregationRoot> Items = new List<TAggregationRoot>();
+        public static readonly IList<TEntity> Items = new List<TEntity>();
 
         public FakeRepository(IUnitOfWork unitOfWork)
         {
@@ -18,14 +18,14 @@ namespace OzonEdu.MerchApi.Infrastructure.Repositories
 
         public IUnitOfWork UnitOfWork { get; }
 
-        public Task<TAggregationRoot> CreateAsync(TAggregationRoot itemToCreate,
-            CancellationToken cancellationToken = default)
-        {
-            Items.Add(itemToCreate);
-            return Task.FromResult<TAggregationRoot>(itemToCreate);
-        }
+        // public Task<TEntity> CreateAsync(TEntity itemToCreate,
+        //     CancellationToken cancellationToken = default)
+        // {
+        //     Items.Add(itemToCreate);
+        //     return Task.FromResult<TEntity>(itemToCreate);
+        // }
 
-        public Task<TAggregationRoot> UpdateAsync(TAggregationRoot itemToUpdate,
+        public Task<TEntity> UpdateAsync(TEntity itemToUpdate,
             CancellationToken cancellationToken = default)
         {
             var findItem = Items.FirstOrDefault(e => e.Id == itemToUpdate.Id);
@@ -42,15 +42,9 @@ namespace OzonEdu.MerchApi.Infrastructure.Repositories
             return Task.FromResult(itemToUpdate);
         }
 
-        public Task<TAggregationRoot> GetAsync(object id, CancellationToken cancellationToken = default)
+        public Task<TEntity> GetAsync(object id, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(Items.FirstOrDefault(e => e.Id == (int)id));
-        }
-
-        public Task DeleteAsync(TAggregationRoot entity, CancellationToken cancellationToken = default)
-        {
-            Items.Remove(entity);
-            return Task.CompletedTask;
         }
     }
 }

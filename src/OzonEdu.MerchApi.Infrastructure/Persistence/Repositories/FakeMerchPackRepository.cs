@@ -2,9 +2,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CSharpCourse.Core.Lib.Enums;
-using OzonEdu.MerchApi.Domain.AggregationModels.HumanResourceManagerAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.Contracts;
+using OzonEdu.MerchApi.Infrastructure.Persistence.Repositories;
 
 namespace OzonEdu.MerchApi.Infrastructure.Repositories
 {
@@ -12,10 +12,8 @@ namespace OzonEdu.MerchApi.Infrastructure.Repositories
     {
         static FakeMerchPackRepository()
         {
-            Items.Add(new MerchPack(MerchType.WelcomePack,
-                new HumanResourceManagerId(1)));
-            Items.Add(new MerchPack(MerchType.ConferenceListenerPack,
-                new HumanResourceManagerId(2)));
+            Items.Add(new MerchPack(MerchType.WelcomePack));
+            Items.Add(new MerchPack(MerchType.ConferenceListenerPack));
         }
 
         public Task<MerchPack> GetByMerchType(MerchType merchType, CancellationToken cancellationToken = default)

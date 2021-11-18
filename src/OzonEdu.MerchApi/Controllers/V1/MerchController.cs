@@ -16,6 +16,7 @@ namespace OzonEdu.MerchApi.Controllers.V1
     public class MerchController : ControllerBase
     {
         private readonly IMediator _mediator;
+
         public MerchController(IMediator mediator)
         {
             _mediator = mediator;
@@ -27,7 +28,8 @@ namespace OzonEdu.MerchApi.Controllers.V1
             CancellationToken token)
         {
             var createMerchRequestCommand =
-                new CreateMerchRequestCommand(request.EmployeeEmail, request.MerchType, MerchRequestMode.ByRequest);
+                new CreateMerchRequestCommand(request.EmployeeEmail, request.ManagerEmail, request.MerchType,
+                    MerchRequestMode.ByRequest);
             var response = await _mediator.Send(createMerchRequestCommand, token);
             return Ok(response);
         }
@@ -36,7 +38,6 @@ namespace OzonEdu.MerchApi.Controllers.V1
         public async Task<ActionResult<GetMerchInfoResponse>> GetMerchInfo(
             string employeeEmail, CancellationToken token)
         {
-            
             var query = new GetEmployeeMerchRequestsQuery(employeeEmail);
             var response = await _mediator.Send(query, token);
             return Ok(response);

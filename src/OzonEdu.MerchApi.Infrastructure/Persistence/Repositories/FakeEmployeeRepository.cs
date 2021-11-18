@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Contracts;
+using OzonEdu.MerchApi.Infrastructure.Persistence.Repositories;
 
 namespace OzonEdu.MerchApi.Infrastructure.Repositories
 {
@@ -23,6 +25,21 @@ namespace OzonEdu.MerchApi.Infrastructure.Repositories
 
         public Task<Employee> FindByEmailAsync(Email email, CancellationToken cancellationToken = default)
             => Task.FromResult(Items.FirstOrDefault(e => e.Email.Equals(email)));
+
+        public Task<Employee> CreateAsync(Employee employee, CancellationToken cancellationToken = default)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task DeleteAsync(Employee employee, CancellationToken cancellationToken = default)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<Employee> GetAsync(int id, CancellationToken cancellationToken = default)
+        {
+            throw new System.NotImplementedException();
+        }
 
         public FakeEmployeeRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
