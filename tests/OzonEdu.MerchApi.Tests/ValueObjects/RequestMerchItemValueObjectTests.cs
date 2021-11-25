@@ -1,5 +1,4 @@
 ﻿using System;
-using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Exceptions;
@@ -12,7 +11,7 @@ namespace OzonEdu.MerchApi.Tests.ValueObjects
         [Fact]
         public void Create_WithNullSku()
         {
-            Assert.Throws<ArgumentNullException>(() => new RequestMerchItem(null));
+            Assert.Throws<ArgumentNullException>(() => new RequestMerchItem(null, null));
         }
     }
 }

@@ -1,5 +1,4 @@
 using FluentMigrator;
-using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using OzonEdu.MerchApi.Infrastructure.Persistence.Models;
 
 namespace OzonEdu.MerchApi.Migrator.Migrations

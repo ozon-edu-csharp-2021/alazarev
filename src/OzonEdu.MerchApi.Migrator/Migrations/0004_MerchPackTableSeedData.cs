@@ -2,7 +2,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CSharpCourse.Core.Lib.Enums;
 using FluentMigrator;
-using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Infrastructure.Persistence.Models;
@@ -14,16 +13,16 @@ namespace OzonEdu.MerchApi.Migrator.Migrations
         public override void Up()
         {
             var mp1 = new MerchPack(MerchType.WelcomePack);
-            mp1.AddPosition(new MerchItem(new Sku(100), new Name("ostin"), MerchCategory.TShirt));
-            mp1.AddPosition(new MerchItem(new Sku(200), new Name("adidas"), MerchCategory.Bag));
+            mp1.AddPosition(new MerchPackItem(new ItemId(1), new Name("TShirtStarter XS"), new Quantity(1)));
+            mp1.AddPosition(new MerchPackItem(new ItemId(7), new Name("NotepadStarter"), new Quantity(1)));
             
             var mp2 = new MerchPack(MerchType.VeteranPack);
-            mp2.AddPosition(new MerchItem(new Sku(300), new Name("Notepad"), MerchCategory.Notepad));
-            mp2.AddPosition(new MerchItem(new Sku(400), new Name("Socks"), MerchCategory.Socks));
-            
+            mp2.AddPosition(new MerchPackItem(new ItemId(13), new Name("TShirtVeteran"), new Quantity(1)));
+            mp2.AddPosition(new MerchPackItem(new ItemId(14), new Name("NotepadVeteran"), new Quantity(1)));
+
             var mp3 = new MerchPack(MerchType.ProbationPeriodEndingPack);
-            mp3.AddPosition(new MerchItem(new Sku(500), new Name("Sweatshirt"), MerchCategory.Sweatshirt));
-            mp3.AddPosition(new MerchItem(new Sku(600), new Name("Bag"), MerchCategory.Bag));
+            mp3.AddPosition(new MerchPackItem(new ItemId(5), new Name("TShirtAfterProbation"), new Quantity(1)));
+            mp3.AddPosition(new MerchPackItem(new ItemId(6), new Name("SweatshirtAfterProbation"), new Quantity(1)));
             
             var jsonPositions1 = JsonSerializer.Serialize(mp1.Positions);
             var jsonPositions2 = JsonSerializer.Serialize(mp2.Positions);

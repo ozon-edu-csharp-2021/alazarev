@@ -16,7 +16,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Repositories
             Items.Add(new MerchPack(MerchType.ConferenceListenerPack));
         }
 
-        public Task<MerchPack> GetByMerchType(MerchType merchType, CancellationToken cancellationToken = default)
+        public Task<MerchPack> GetByMerchTypeAsync(MerchType merchType, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(Items.FirstOrDefault(p => p.Type == merchType));
         }

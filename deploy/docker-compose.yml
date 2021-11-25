@@ -6,7 +6,8 @@ services:
     hostname: merch-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - DbConfiguration__ConnectionString=Host=merch-api-db;Port=5432;Database=merch-api;Username=postgres;Password=merchApiPassword
+      - DatabaseConnectionOptions__ConnectionString=Host=merch-api-db;Port=5432;Database=merch-api;Username=postgres;Password=merchApiPassword
+      - StockApiOptions__Url=http://stock-api:82
     build:
       context: ./../
     depends_on:
@@ -18,9 +19,9 @@ services:
     ports:
       - 8080:5000
       - 8081:5001
-#    expose:
-#      - 80
-    
+    #    expose:
+    #      - 80
+
   supply-service:
     image: ghcr.io/ozon-edu-csharp-2021/supply-service:main
     environment:
@@ -48,6 +49,9 @@ services:
       DatabaseConnectionOptions__ConnectionString: "Host=host.docker.internal;Port=5427;Database=stock-api;Username=postgres;Password=stockApiPassword"
     depends_on:
       - stock-api-db
+    ports:
+      - 8090:80
+      - 8091:82
 
   supply-service-db:
     image: postgres:latest
@@ -77,7 +81,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: stockApiPassword
       POSTGRES_DB: stock-api
-      
+
   merch-api-db:
     image: postgres:latest
     hostname: merch-api-db

@@ -1,6 +1,6 @@
 using System;
 
-namespace OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate
+namespace OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects
 {
     public class Height
     {

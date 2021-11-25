@@ -1,18 +1,16 @@
 using MediatR;
-using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 
 namespace OzonEdu.MerchApi.Domain.Events
 {
     public class MerchInStockEvent : INotification
     {
-        public MerchInStockEvent(EmployeeId employeeId, MerchRequestId requestId)
+        public MerchInStockEvent(MerchRequest request)
         {
-            EmployeeId = employeeId;
-            RequestId = requestId;
+            Request = request;
         }
 
-        public EmployeeId EmployeeId { get; }
-        public MerchRequestId RequestId { get; }
+
+        public MerchRequest Request { get; }
     }
 }

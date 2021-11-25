@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using EmailValueObject = OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects.Email;
 using ClothingSizeEnum = OzonEdu.MerchApi.Domain.AggregationModels.Enums.ClothingSize;
 

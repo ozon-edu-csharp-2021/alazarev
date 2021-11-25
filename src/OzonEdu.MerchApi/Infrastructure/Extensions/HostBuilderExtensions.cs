@@ -23,8 +23,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Extensions
             {
                 services.AddAutoMapper(typeof(GprcMappingProfile), MerchApiInfrastructure.Marker);
                 services.AddMediatR(MerchApiInfrastructure.Marker);
-                services.AddDatabaseComponents(context.Configuration);
-                services.AddInfrastructure(MerchApiInfrastructure.Marker);
+                services.AddInfrastructure(context.Configuration, MerchApiInfrastructure.Marker);
                 services.AddValidatorsFromAssembly(MerchApiInfrastructure.Marker.Assembly);
                 services.AddSingleton<IStartupFilter, RequestResponseLoggingStartupFilter>();
                 services.AddSingleton<IStartupFilter, TerminalStartupFilter>();

@@ -6,12 +6,12 @@ using OzonEdu.MerchApi.Domain.Models;
 
 namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
 {
-    public class RequestMerchItem : ValueObject
+    public class SupplyMerchItem : ValueObject
     {
         public Sku Sku { get; private set; }
         public Quantity Quantity { get; private set; }
 
-        public RequestMerchItem(Sku sku, Quantity quantity)
+        public SupplyMerchItem(Sku sku, Quantity quantity)
         {
             Sku = sku ?? throw new ArgumentNullException(nameof(sku));
             Quantity = quantity ?? throw new ArgumentNullException(nameof(quantity));

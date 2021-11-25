@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text.Json;
 using AutoMapper;
 using CSharpCourse.Core.Lib.Enums;
-using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.Enums;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Infrastructure.Persistence.Models;
+using ClothingSize = CSharpCourse.Core.Lib.Enums.ClothingSize;
 
 namespace OzonEdu.MerchApi.Infrastructure.Mappers
 {
@@ -17,39 +17,46 @@ namespace OzonEdu.MerchApi.Infrastructure.Mappers
     {
         public DtoMappingProfile()
         {
-            CreateMap<EmployeeDto, Employee>().ConstructUsing(e =>
-                new Employee(e.Id, Email.Create(e.Email),
-                    PersonName.Create(e.FirstName, e.LastName),
-                    e.ClothingSize.HasValue ? ClothingSize.ParseFromInt(e.ClothingSize.Value) : null,
-                    e.Height.HasValue ? new Height(e.Height.Value) : null));
+            CreateMap<RequestMerchItemDto, RequestMerchItem>().ConstructUsing(i =>
+                new RequestMerchItem(new Sku(i.Sku.Value),
+                    new Quantity(i.Quantity.Value))).IgnoreAllPropertiesWithAnInaccessibleSetter();
 
-            CreateMap<MerchItemDto, MerchItem>().ConstructUsing(i =>
-                new MerchItem(new Sku(i.Sku.Value), new Name(i.Name.Value),
-                    new MerchCategory(i.Category.Id, i.Category.Name))).IgnoreAllPropertiesWithAnInaccessibleSetter();
+            CreateMap<MerchPackItemDto, MerchPackItem>().ConstructUsing(i =>
+                new MerchPackItem(new ItemId(i.ItemId.Value), new Name(i.Name.Value),
+                    new Quantity(i.Quantity.Value))).IgnoreAllPropertiesWithAnInaccessibleSetter();
 
             CreateMap<MerchPackDto, MerchPack>()
                 .ConstructUsing((m, ctx) => new MerchPack(m.Id, (MerchType)m.Type, GetPositions(m, ctx)))
                 .IgnoreAllPropertiesWithAnInaccessibleSetter();
 
-            CreateMap<MerchRequestDto, MerchRequest>().ConstructUsing(d =>
+            CreateMap<MerchRequestDto, MerchRequest>().ConstructUsing((d, ctx) =>
                 MerchRequest.Create(
                     d.Id,
-                    new EmployeeId(d.EmployeeId),
+                    EmployeeEmail.Create(d.EmployeeEmail),
+                    ManagerEmail.Create(d.ManagerEmail),
+                    (ClothingSize)d.ClothingSize,
                     MerchRequestMode.Parse(d.Mode),
                     d.StartedAt,
-                    Email.Create(d.ManagerEmail),
                     (MerchType)d.RequestedMerchType,
                     MerchRequestStatus.Parse(d.Status),
-                    d.ReservedAt)).IgnoreAllPropertiesWithAnInaccessibleSetter();
+                    d.ReservedAt, GetItems(d, ctx))).IgnoreAllPropertiesWithAnInaccessibleSetter();
             ;
         }
 
-        private IEnumerable<MerchItem> GetPositions(MerchPackDto dto, ResolutionContext context)
+        private IEnumerable<MerchPackItem> GetPositions(MerchPackDto dto, ResolutionContext context)
         {
-            var positionDtos = JsonSerializer.Deserialize<MerchItemDto[]>(dto.Positions) ??
-                               Array.Empty<MerchItemDto>();
+            var positionDtos = JsonSerializer.Deserialize<MerchPackItemDto[]>(dto.Positions) ??
+                               Array.Empty<MerchPackItemDto>();
 
-            return context.Mapper.Map<IEnumerable<MerchItem>>(positionDtos);
+            return context.Mapper.Map<IEnumerable<MerchPackItem>>(positionDtos);
+        }
+
+        private IEnumerable<RequestMerchItem> GetItems(MerchRequestDto dto, ResolutionContext context)
+        {
+            var itemsDtos = JsonSerializer.Deserialize<RequestMerchItemDto[]>(dto.RequestMerch) ??
+                            Array.Empty<RequestMerchItemDto>();
+
+            return context.Mapper.Map<IEnumerable<RequestMerchItem>>(itemsDtos);
         }
     }
 }

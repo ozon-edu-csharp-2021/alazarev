@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Models;
 
-namespace OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects
+namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
 {
     public class EmailMessage : ValueObject
     {

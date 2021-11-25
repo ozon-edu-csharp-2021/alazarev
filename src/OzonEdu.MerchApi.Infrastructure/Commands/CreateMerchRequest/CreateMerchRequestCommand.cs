@@ -8,16 +8,19 @@ namespace OzonEdu.MerchApi.Infrastructure.Commands.CreateMerchRequest
     {
         public string EmployeeEmail { get; }
         public string ManagerEmail { get; }
+        public ClothingSize ClothingSize { get; }
         public MerchType MerchType { get; }
         public MerchRequestMode MerchRequestMode { get; }
 
-        public CreateMerchRequestCommand(string employeeEmail, string managerEmail, MerchType merchType,
+        public CreateMerchRequestCommand(string employeeEmail, string managerEmail, ClothingSize clothingSize,
+            MerchType merchType,
             MerchRequestMode merchRequestMode)
         {
             EmployeeEmail = employeeEmail;
             MerchType = merchType;
             MerchRequestMode = merchRequestMode;
             ManagerEmail = managerEmail;
+            ClothingSize = clothingSize;
         }
     }
 }

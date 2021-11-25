@@ -1,5 +1,4 @@
 using FluentMigrator;
-using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
 using OzonEdu.MerchApi.Infrastructure.Persistence.Models;
 
 namespace OzonEdu.MerchApi.Migrator.Migrations
@@ -13,11 +12,13 @@ namespace OzonEdu.MerchApi.Migrator.Migrations
                 .WithColumn("id").AsInt32().Identity().PrimaryKey()
                 .WithColumn("started_at").AsDateTimeOffset().NotNullable()
                 .WithColumn("manager_email").AsString().NotNullable()
-                .WithColumn("employee_id").AsInt32().NotNullable()
+                .WithColumn("employee_email").AsString().NotNullable()
                 .WithColumn("status").AsInt32().NotNullable()
+                .WithColumn("clothing_size").AsInt32().NotNullable()
                 .WithColumn("requested_merch_type").AsInt32().Nullable()
                 .WithColumn("mode").AsInt32().NotNullable()
-                .WithColumn("reserved_at").AsDateTimeOffset().Nullable();
+                .WithColumn("reserved_at").AsDateTimeOffset().Nullable()
+                .WithColumn("request_merch").AsCustom("jsonb");
         }
 
         public override void Down()

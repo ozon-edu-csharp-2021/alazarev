@@ -20,7 +20,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Persistence.Repositories
         private readonly IMapper _mapper;
         private const int Timeout = 5;
 
-        public async Task<MerchPack> GetByMerchType(MerchType merchType, CancellationToken cancellationToken = default)
+        public async Task<MerchPack> GetByMerchTypeAsync(MerchType merchType, CancellationToken cancellationToken = default)
         {
             const string sql = @"
 SELECT id, type, positions from merch_pack where type=@Type;";

@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Contracts;
 using OzonEdu.MerchApi.Domain.Events;
@@ -11,12 +11,10 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.DomainEvents
 {
     public class RequestWaitingForSupplyEventHandler : INotificationHandler<RequestWaitingForSupplyEvent>
     {
-        private readonly IEmployeeRepository _employeeRepository;
         private readonly IMessageBus _messageBus;
 
-        public RequestWaitingForSupplyEventHandler(IEmployeeRepository employeeRepository, IMessageBus messageBus)
+        public RequestWaitingForSupplyEventHandler(IMessageBus messageBus)
         {
-            _employeeRepository = employeeRepository;
             _messageBus = messageBus;
         }
 

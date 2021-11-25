@@ -8,34 +8,34 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate
 {
     public sealed class MerchPack : Entity, IAggregationRoot
     {
-        private List<MerchItem> _positions;
+        private List<MerchPackItem> _positions;
 
         public MerchType Type { get; private set; }
 
-        public IReadOnlyCollection<MerchItem> Positions => _positions.AsReadOnly();
+        public IReadOnlyCollection<MerchPackItem> Positions => _positions.AsReadOnly();
 
         public MerchPack(MerchType type)
         {
             Type = type;
-            _positions = new List<MerchItem>();
+            _positions = new List<MerchPackItem>();
         }
 
-        public MerchPack(int id, MerchType type, IEnumerable<MerchItem> merchItems)
+        public MerchPack(int id, MerchType type, IEnumerable<MerchPackItem> merchItems)
         {
             Id = id;
             Type = type;
-            _positions = new List<MerchItem>(merchItems);
+            _positions = new List<MerchPackItem>(merchItems);
         }
 
 
-        public void AddPosition(MerchItem position)
+        public void AddPosition(MerchPackItem position)
         {
             _positions.Add(position);
         }
 
-        public void RemovePosition(MerchItem position)
+        public void RemovePosition(MerchPackItem position)
         {
-            var toRemove = _positions.FirstOrDefault(p => Equals(p.Sku, position.Sku));
+            var toRemove = _positions.FirstOrDefault(p => Equals(p.ItemId, position.ItemId));
             if (toRemove != null)
             {
                 _positions.Remove(toRemove);
@@ -46,6 +46,5 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate
         {
             _positions.Clear();
         }
-        
     }
 }

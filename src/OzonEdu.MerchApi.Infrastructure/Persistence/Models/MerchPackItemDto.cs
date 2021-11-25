@@ -3,10 +3,10 @@ using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 
 namespace OzonEdu.MerchApi.Infrastructure.Persistence.Models
 {
-    public class MerchItemDto
+    public class MerchPackItemDto
     {
         public NameDto Name { get; set; }
-        public SkuDto Sku { get; set; }
-        public MerchCategoryDto Category { get; set; }
+        public ItemIdDto ItemId { get; set; }
+        public QuantityDto Quantity { get; set; }
     }
 }

@@ -3,9 +3,14 @@ using OzonEdu.MerchApi.Infrastructure.Persistence.Models;
 
 namespace OzonEdu.MerchApi.Migrator.Migrations
 {
-    [Migration(1)]
-    public class EmployeeTable:Migration {
+    [Migration(6)]
+    public class DropEmployeeTable:Migration {
         public override void Up()
+        {
+            Delete.Table("employee");
+        }
+
+        public override void Down()
         {
             Create
                 .Table("employee")
@@ -15,11 +20,6 @@ namespace OzonEdu.MerchApi.Migrator.Migrations
                 .WithColumn("email").AsString().NotNullable()
                 .WithColumn("clothing_size").AsInt32().Nullable()
                 .WithColumn("height").AsDouble().Nullable();
-        }
-
-        public override void Down()
-        {
-            Delete.Table("employee");
         }
     }
 }

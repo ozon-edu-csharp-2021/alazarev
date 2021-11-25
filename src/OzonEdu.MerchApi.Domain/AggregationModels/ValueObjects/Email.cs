@@ -10,7 +10,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects
     {
         public string Value { get; }
 
-        private Email(string email)
+        protected Email(string email)
         {
             if (!Regex.IsMatch(email ?? throw new ArgumentNullException(nameof(email)),
                 @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
