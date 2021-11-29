@@ -1,16 +1,20 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Contracts;
 
 namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
 {
-    public interface IMerchRequestRepository : IRepository<IMerchRequest>
+    public interface IMerchRequestRepository : IRepository<MerchRequest>
     {
-        Task<IEnumerable<IMerchRequest>> GetAllEmployeeRequestsAsync(int employeeId,
+        Task<IEnumerable<MerchRequest>> GetAllEmployeeRequestsAsync(EmployeeEmail employeeEmail,
             CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<IMerchRequest>> GetAllWaitingForSupplyRequestsByModeAsync(MerchRequestMode mode,
+        Task<IEnumerable<MerchRequest>> GetAllWaitingForSupplyRequestsAsync(
             CancellationToken cancellationToken = default);
+
+        Task<MerchRequest> CreateAsync(MerchRequest request, CancellationToken cancellationToken = default);
+        Task<MerchRequest> UpdateAsync(MerchRequest request, CancellationToken cancellationToken = default);
     }
 }

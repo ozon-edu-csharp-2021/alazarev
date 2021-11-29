@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 
 namespace OzonEdu.MerchApi.Domain.Contracts

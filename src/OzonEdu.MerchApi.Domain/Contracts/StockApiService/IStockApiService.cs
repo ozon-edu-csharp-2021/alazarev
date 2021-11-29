@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using CSharpCourse.Core.Lib.Enums;
+using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 
 namespace OzonEdu.MerchApi.Domain.Contracts.StockApiService
 {
@@ -10,20 +13,16 @@ namespace OzonEdu.MerchApi.Domain.Contracts.StockApiService
     public interface IStockApiService
     {
         /// <summary>
-        ///  проверить наличие по коллекции sku
-        /// </summary>
-        /// <param name="skus"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<IEnumerable<StockItem>> GetStockItemsAvailabilityAsync(IEnumerable<long> skus,
-            CancellationToken cancellationToken = default);
-
-        /// <summary>
         /// зарезервировать по коллекции ску
         /// </summary>
         /// <param name="skus"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<bool> ReserveStockItemsAsync(IEnumerable<long> skus, CancellationToken cancellationToken = default);
+        Task<bool> ReserveStockItemsAsync(MerchRequest merchRequest, CancellationToken cancellationToken = default);
+
+        Task<bool> CheckMerchRequestAvailabilityAsync(MerchRequest merchRequest,
+            CancellationToken cancellationToken = default);
+        Task<IEnumerable<StockItemUnit>> GetSkusByMerchPackAndSizeAsync(MerchPack merchPack, ClothingSize clothingSize,
+            CancellationToken cancellationToken = default);
     }
 }

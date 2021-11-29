@@ -13,6 +13,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate
 
         public MerchCategory(int id, string name) : base(id, name)
         {
+            
         }
     }
 }

@@ -1,26 +1,25 @@
 using System;
+using System.Collections.Generic;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Models;
 
 namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
 {
-    public class RequestMerchItem : Entity
+    public class RequestMerchItem : ValueObject
     {
         public Sku Sku { get; private set; }
-        public RequestMerchItemStatus Status { get; private set; }
+        public Quantity Quantity { get; private set; }
 
-        public RequestMerchItem(Sku sku)
+        public RequestMerchItem(Sku sku, Quantity quantity)
         {
             Sku = sku ?? throw new ArgumentNullException(nameof(sku));
-            Status = RequestMerchItemStatus.NotVerified;
+            Quantity = quantity ?? throw new ArgumentNullException(nameof(quantity));
         }
 
-        public bool ChangeStatus(RequestMerchItemStatus status)
+        protected override IEnumerable<object> GetEqualityComponents()
         {
-            if (Equals(status, Status)) return false;
-            Status = status;
-            return true;
+            yield return Sku;
         }
     }
 }

@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CSharpCourse.Core.Lib.Enums;
-using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
-using OzonEdu.MerchApi.Domain.AggregationModels.HumanResourceManagerAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
@@ -33,46 +31,18 @@ namespace OzonEdu.MerchApi.Tests.AggregationRoots
         public void StartWork_StatusIsInProcess()
         {
             var request = Create();
-            StartWork(request);
-            Assert.Equal(request.Status, MerchRequestStatus.InProcess);
-            Assert.Contains(request.DomainEvents,
-                notification => notification.GetType() == typeof(RequestProcessedEvent));
-        }
-
-        [Fact]
-        public void CheckWithStock_StatusWhenAllInStock()
-        {
-            var request = Create();
-            StartWork(request);
-            CheckWithStockWhenAllInStock(request);
-            Assert.Equal(request.Status, MerchRequestStatus.InProcess);
-            Assert.All(request.Items, item => Assert.Equal(item.Status, RequestMerchItemStatus.InStock));
-        }
-
-        [Fact]
-        public void CheckWithStock_StatusWhenAllOutStock()
-        {
-            var request = Create();
-            StartWork(request);
-            request.UpdateItemStatusesFromStockAvailabilities(request.Items.Select(i => new StockItem
-            {
-                SkuId = i.Sku.Value,
-                Quantity = 0
-            }));
+            StartWorkOk(request);
             Assert.Equal(request.Status, MerchRequestStatus.WaitingForSupply);
-            Assert.Contains(request.DomainEvents,
-                notification => notification.GetType() == typeof(RequestWaitingForSupplyEvent));
-            Assert.All(request.Items, item => Assert.Equal(item.Status, RequestMerchItemStatus.WaitingForSupply));
         }
+
 
         [Fact]
         public void Reserve_StatusWhenAllInStock()
         {
             var reservedAt = DateTimeOffset.UtcNow;
             var request = Create();
-            StartWork(request);
-            CheckWithStockWhenAllInStock(request);
-            request.Reserve(true, reservedAt);
+            StartWorkOk(request);
+            request.Complete(true, reservedAt);
 
             Assert.Equal(request.Status, MerchRequestStatus.Reserved);
             Assert.Contains(request.DomainEvents,
@@ -81,41 +51,40 @@ namespace OzonEdu.MerchApi.Tests.AggregationRoots
         }
 
         [Fact]
-        public void Reserve_StatusWhenError()
+        public void Reserve_ErrorWhenSkuNotFound()
         {
             var request = Create();
-            StartWork(request);
-            CheckWithStockWhenAllInStock(request);
-            request.Reserve(false);
-            Assert.Contains(request.DomainEvents,
-                notification => notification.GetType() == typeof(RequestOnErrorEvent));
-            Assert.Equal(request.Status, MerchRequestStatus.Error);
+
+            var exception = Assert.Throws<Exception>(() => { StartWork(request); });
+            Assert.Equal("Sku not found", exception.Message);
         }
 
         [Theory]
         [MemberData(nameof(Create_IncorrectStartAt_Data))]
         public void Create_IncorrectStartAt(DateTimeOffset startedAt)
         {
-            var employee = new Employee(Email.Create("qwe@qwe.ru"), PersonName.Create("Alex", "Lazarev"), null, null);
-
             Assert.Throws<IncorrectMerchRequestException>(() => MerchRequest.Create(
-                employee,
+                EmployeeEmail.Create("vasya@ozon.ru"),
+                ManagerEmail.Create("manager@ozon.ru"),
+                ClothingSize.L,
                 MerchRequestMode.ByRequest,
-                startedAt));
+                startedAt
+            ));
         }
 
         [Fact]
         public void Reserve_WhenIncorrectStatus()
         {
             var request = Create();
-            Assert.Throws<IncorrectRequestStatusException>(() => { request.Reserve(false); });
+            Assert.Throws<IncorrectRequestStatusException>(() => { request.Complete(false); });
         }
 
         private MerchRequest Create()
         {
-            var employee = new Employee(Email.Create("qwe@qwe.ru"), PersonName.Create("Alex", "Lazarev"), null, null);
             var request = MerchRequest.Create(
-                employee,
+                EmployeeEmail.Create("qwe@qwe.ru"),
+                ManagerEmail.Create("manager@ozon.ru"),
+                ClothingSize.S,
                 MerchRequestMode.ByRequest,
                 new DateTimeOffset(2001, 10, 10, 0, 0, 0, TimeSpan.Zero));
             return request;
@@ -123,21 +92,27 @@ namespace OzonEdu.MerchApi.Tests.AggregationRoots
 
         private void StartWork(MerchRequest request)
         {
-            var merchPack = new MerchPack(MerchType.WelcomePack, new HumanResourceManagerId(0));
-            merchPack.AddPosition(new MerchItem(new Sku(1), new Name("TShirt"), MerchCategory.TShirt));
-            merchPack.AddPosition(new MerchItem(new Sku(2), new Name("Bag"), MerchCategory.Bag));
-            merchPack.AddPosition(new MerchItem(new Sku(3), new Name("Socks"), MerchCategory.Socks));
+            var merchPack = new MerchPack(MerchType.WelcomePack);
+            merchPack.AddPosition(new MerchPackItem(new ItemId(1), new Name("TShirt"), new Quantity(1)));
+            merchPack.AddPosition(new MerchPackItem(new ItemId(2), new Name("Bag"), new Quantity(1)));
+            merchPack.AddPosition(new MerchPackItem(new ItemId(3), new Name("Socks"), new Quantity(1)));
 
-            request.StartWork(merchPack);
+            request.StartWork(merchPack, new StockItemUnit[] { });
         }
 
-        private void CheckWithStockWhenAllInStock(MerchRequest request)
+        private void StartWorkOk(MerchRequest request)
         {
-            request.UpdateItemStatusesFromStockAvailabilities(request.Items.Select(i => new StockItem
-            {
-                SkuId = i.Sku.Value,
-                Quantity = 10
-            }));
+            var merchPack = new MerchPack(MerchType.WelcomePack);
+            merchPack.AddPosition(new MerchPackItem(new ItemId(1), new Name("TShirt"), new Quantity(1)));
+            merchPack.AddPosition(new MerchPackItem(new ItemId(2), new Name("Bag"), new Quantity(1)));
+            merchPack.AddPosition(new MerchPackItem(new ItemId(3), new Name("Socks"), new Quantity(1)));
+
+            request.StartWork(merchPack,
+                new StockItemUnit[]
+                {
+                    new() { Sku = 1, ItemTypeId = 1 }, new() { Sku = 2, ItemTypeId = 2 },
+                    new() { Sku = 3, ItemTypeId = 3 }
+                });
         }
     }
 }

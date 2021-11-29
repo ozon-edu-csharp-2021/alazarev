@@ -4,6 +4,8 @@ option csharp_namespace = "OzonEdu.MerchApi.Grpc";
 package MerchApi;
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 
 service MerchApiGrpc {
   rpc GetReceivingMerchInfo (GetMerchInfoRequest) returns (GetMerchInfoResponse);
@@ -12,7 +14,9 @@ service MerchApiGrpc {
 
 message RequestMerchRequest {
   string employeeEmail = 1;
-  MerchType merch_type = 2;
+  string managerEmail = 2;
+  MerchType merch_type = 3;
+  google.protobuf.Int32Value clothing_size = 4;
 }
 
 message RequestMerchResponse{

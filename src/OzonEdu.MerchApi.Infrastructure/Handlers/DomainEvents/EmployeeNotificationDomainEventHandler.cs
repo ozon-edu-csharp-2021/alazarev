@@ -1,43 +1,38 @@
+using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using CSharpCourse.Core.Lib.Enums;
 using MediatR;
-using OzonEdu.MerchApi.Domain.AggregationModels.EmployeeAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
+using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Events;
+using OzonEdu.MerchApi.Infrastructure.Commands.CreateMerchRequest;
 
 namespace OzonEdu.MerchApi.Infrastructure.Handlers.DomainEvents
 {
     public class EmployeeNotificationDomainEventHandler : INotificationHandler<EmployeeNotificationDomainEvent>
     {
-        private readonly IEmployeeRepository _employeeRepository;
+        private readonly IMerchRequestRepository _merchRequestRepository;
+        private readonly IMediator _mediator;
 
-        public EmployeeNotificationDomainEventHandler(IEmployeeRepository employeeRepository)
+        public EmployeeNotificationDomainEventHandler(IMerchRequestRepository merchRequestRepository,
+            IMediator mediator)
         {
-            _employeeRepository = employeeRepository;
+            _merchRequestRepository = merchRequestRepository;
+            _mediator = mediator;
         }
 
         public async Task Handle(EmployeeNotificationDomainEvent notification, CancellationToken cancellationToken)
         {
-            if (notification.EventType == EmployeeEventType.Hiring)
+            if (notification.MerchDeliveryPayload != null)
             {
-                // TODO в будущем нужна информация о размере сотрудника и росте, чтобы правильно формировать мерч пак для сотрудника.
-                // Возможно за этой информацией Merch Api будем сам лазить в сервис сотрудников
-                await _employeeRepository.CreateAsync(new Employee(Email.Create(notification.Email),
-                    PersonName.ParseFromFullName(notification.EmployeeName), null, null), cancellationToken);
+                var createMerchRequestCommand =
+                    new CreateMerchRequestCommand(notification.EmployeeEmail, notification.ManagerEmail,
+                        notification.MerchDeliveryPayload.ClothingSize, notification.MerchDeliveryPayload.MerchType,
+                        MerchRequestMode.Auto);
 
-                await _employeeRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
-            }
-            else if (notification.EventType == EmployeeEventType.Dismissal)
-            {
-                var employee =
-                    await _employeeRepository.FindByEmailAsync(Email.Create(notification.Email), cancellationToken);
-                if (employee != null)
-                {
-                    await _employeeRepository.DeleteAsync(employee, cancellationToken);
-                    await _employeeRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
-                    return;
-                }
+                await _mediator.Send(createMerchRequestCommand, cancellationToken);
             }
         }
     }

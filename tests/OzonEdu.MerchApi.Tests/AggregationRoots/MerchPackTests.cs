@@ -1,6 +1,5 @@
 using System.Linq;
 using CSharpCourse.Core.Lib.Enums;
-using OzonEdu.MerchApi.Domain.AggregationModels.HumanResourceManagerAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
@@ -13,34 +12,34 @@ namespace OzonEdu.MerchApi.Tests.AggregationRoots
         [Fact]
         public void MerchPack_AddThreePositions()
         {
-            var pack = new MerchPack(MerchType.WelcomePack, new HumanResourceManagerId(0));
-            pack.AddPosition(new MerchItem(new Sku(1), new Name("Bag"), MerchCategory.Bag));
-            pack.AddPosition(new MerchItem(new Sku(2), new Name("Notepad"), MerchCategory.Notepad));
-            pack.AddPosition(new MerchItem(new Sku(3), new Name("Socks"), MerchCategory.Socks));
+            var pack = new MerchPack(MerchType.WelcomePack);
+            pack.AddPosition(new MerchPackItem(new ItemId(1), new Name("Bag"), new Quantity(1)));
+            pack.AddPosition(new MerchPackItem(new ItemId(2), new Name("Notepad"), new Quantity(1)));
+            pack.AddPosition(new MerchPackItem(new ItemId(3), new Name("Socks"), new Quantity(1)));
 
-            Assert.Equal(3, pack.Count());
+            Assert.Equal(3, pack.Positions.Count());
         }
-        
+
         [Fact]
         public void MerchPack_ClearAll()
         {
-            var pack = new MerchPack(MerchType.WelcomePack, new HumanResourceManagerId(0));
-            pack.AddPosition(new MerchItem(new Sku(1), new Name("Bag"), MerchCategory.Bag));
-            pack.AddPosition(new MerchItem(new Sku(2), new Name("Notepad"), MerchCategory.Notepad));
-            pack.AddPosition(new MerchItem(new Sku(3), new Name("Socks"), MerchCategory.Socks));
+            var pack = new MerchPack(MerchType.WelcomePack);
+            pack.AddPosition(new MerchPackItem(new ItemId(1), new Name("Bag"), new Quantity(1)));
+            pack.AddPosition(new MerchPackItem(new ItemId(2), new Name("Notepad"), new Quantity(1)));
+            pack.AddPosition(new MerchPackItem(new ItemId(3), new Name("Socks"), new Quantity(1)));
             pack.ClearAllPositions();
-            Assert.Empty(pack);
+            Assert.Empty(pack.Positions);
         }
-        
+
         [Fact]
         public void MerchPack_RemoveNotepad()
         {
-            var pack = new MerchPack(MerchType.WelcomePack, new HumanResourceManagerId(0));
-            pack.AddPosition(new MerchItem(new Sku(1), new Name("Bag"), MerchCategory.Bag));
-            pack.AddPosition(new MerchItem(new Sku(2), new Name("Notepad"), MerchCategory.Notepad));
-            pack.AddPosition(new MerchItem(new Sku(3), new Name("Socks"), MerchCategory.Socks));
-            pack.RemovePosition(new MerchItem(new Sku(2), new Name("Notepad"), MerchCategory.Notepad));
-            Assert.Equal(2, pack.Count());
+            var pack = new MerchPack(MerchType.WelcomePack);
+            pack.AddPosition(new MerchPackItem(new ItemId(1), new Name("Bag"), new Quantity(1)));
+            pack.AddPosition(new MerchPackItem(new ItemId(2), new Name("Notepad"), new Quantity(1)));
+            pack.AddPosition(new MerchPackItem(new ItemId(3), new Name("Socks"), new Quantity(1)));
+            pack.RemovePosition(new MerchPackItem(new ItemId(2), new Name("Notepad"), new Quantity(1)));
+            Assert.Equal(2, pack.Positions.Count());
         }
     }
 }
