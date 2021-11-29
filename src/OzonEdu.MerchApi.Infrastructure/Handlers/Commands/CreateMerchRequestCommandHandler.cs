@@ -25,6 +25,41 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.Commands
         private readonly IMerchPackRepository _merchPackRepository;
         private readonly IStockApiService _stockApiService;
 
+
+        private static readonly Func<MerchRequest, bool> AlreadyHasVeteranOrConferencePacks = request =>
+        {
+            var merchTypeCondition =
+                request.RequestedMerchType is MerchType.ConferenceListenerPack or MerchType.ConferenceSpeakerPack or
+                    MerchType.VeteranPack;
+
+            var whenReservedCondition = request.Status.Equals(MerchRequestStatus.Reserved)
+                                        && request.ReservedAt.HasValue
+                                        && request.ReservedAt.Value.AddYears(1) > DateTimeOffset.UtcNow;
+
+            var inProgressCondition = request.Status.Equals(MerchRequestStatus.InProcess)
+                                      || request.Status.Equals(MerchRequestStatus.WaitingForSupply);
+
+            return merchTypeCondition
+                   && ((whenReservedCondition)
+                       || inProgressCondition);
+        };
+
+
+        private static readonly Func<MerchRequest, bool> AlreadyHasNonVeteranOrConferencePacks = request =>
+        {
+            var merchTypeCondition =
+                request.RequestedMerchType != MerchType.ConferenceListenerPack &&
+                request.RequestedMerchType != MerchType.ConferenceSpeakerPack &&
+                request.RequestedMerchType != MerchType.VeteranPack;
+
+            var reservedOrInProgressCondition = request.Status.Equals(MerchRequestStatus.Reserved)
+                                                || request.Status.Equals(MerchRequestStatus.InProcess)
+                                                || request.Status.Equals(MerchRequestStatus.WaitingForSupply);
+
+            return (merchTypeCondition)
+                   && (reservedOrInProgressCondition);
+        };
+
         public CreateMerchRequestCommandHandler(
             IValidator<CreateMerchRequestCommand> validator, IMerchRequestRepository merchRequestRepository,
             IMerchPackRepository merchPackRepository, IStockApiService stockApiService)
@@ -106,22 +141,10 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.Commands
             if (merchType is MerchType.ConferenceListenerPack or MerchType.ConferenceSpeakerPack or MerchType
                 .VeteranPack)
             {
-                return !employeeRequests.Any(r =>
-                    r.RequestedMerchType == merchType
-                    && ((r.Status.Equals(MerchRequestStatus.Reserved)
-                         && r.ReservedAt.HasValue
-                         && r.ReservedAt.Value.AddYears(1) > DateTimeOffset.UtcNow)
-                        || r.Status.Equals(MerchRequestStatus.InProcess)
-                        || r.Status.Equals(MerchRequestStatus.WaitingForSupply))
-                );
+                return !employeeRequests.Any(AlreadyHasVeteranOrConferencePacks);
             }
 
-            return !employeeRequests.Any(r =>
-                r.RequestedMerchType == merchType
-                && (r.Status.Equals(MerchRequestStatus.Reserved)
-                    || r.Status.Equals(MerchRequestStatus.InProcess)
-                    || r.Status.Equals(MerchRequestStatus.WaitingForSupply))
-            );
+            return !employeeRequests.Any(AlreadyHasNonVeteranOrConferencePacks);
         }
     }
 }

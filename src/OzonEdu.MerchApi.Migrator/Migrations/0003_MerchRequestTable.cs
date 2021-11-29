@@ -3,7 +3,7 @@ using OzonEdu.MerchApi.Infrastructure.Persistence.Models;
 
 namespace OzonEdu.MerchApi.Migrator.Migrations
 {
-    [Migration(5)]
+    [Migration(3)]
     public class MerchRequestTable:Migration {
         public override void Up()
         {
@@ -12,8 +12,8 @@ namespace OzonEdu.MerchApi.Migrator.Migrations
                 .WithColumn("id").AsInt32().Identity().PrimaryKey()
                 .WithColumn("started_at").AsDateTimeOffset().NotNullable()
                 .WithColumn("manager_email").AsString().NotNullable()
-                .WithColumn("employee_email").AsString().NotNullable()
-                .WithColumn("status").AsInt32().NotNullable()
+                .WithColumn("employee_email").AsString().NotNullable().Indexed("merch_request__employee_email_index")
+                .WithColumn("status").AsInt32().NotNullable().Indexed("merch_request__status_index")
                 .WithColumn("clothing_size").AsInt32().NotNullable()
                 .WithColumn("requested_merch_type").AsInt32().Nullable()
                 .WithColumn("mode").AsInt32().NotNullable()

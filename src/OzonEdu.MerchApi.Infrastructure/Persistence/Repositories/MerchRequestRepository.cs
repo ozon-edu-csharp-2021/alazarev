@@ -27,7 +27,18 @@ namespace OzonEdu.MerchApi.Infrastructure.Persistence.Repositories
             CancellationToken cancellationToken = default)
         {
             const string sql = @"
-SELECT id, started_at, manager_email, employee_email,clothing_size, status, requested_merch_type, mode, reserved_at,request_merch from merch_request where employee_email=@EmployeeEmail;";
+SELECT id, 
+       started_at, 
+       manager_email, 
+       employee_email,
+       clothing_size, 
+       status, 
+       requested_merch_type, 
+       mode, 
+       reserved_at,
+       request_merch 
+from merch_request 
+where employee_email=@EmployeeEmail;";
 
             var parameters = new
             {
@@ -50,7 +61,16 @@ SELECT id, started_at, manager_email, employee_email,clothing_size, status, requ
             CancellationToken cancellationToken = default)
         {
             const string sql = @"
-SELECT id, started_at, manager_email, employee_email, clothing_size,status, requested_merch_type, mode, reserved_at,request_merch 
+SELECT id, 
+       started_at, 
+       manager_email, 
+       employee_email, 
+       clothing_size,
+       status, 
+       requested_merch_type, 
+       mode, 
+       reserved_at,
+       request_merch 
 from merch_request 
 where status=@Status
 order by started_at;";
@@ -75,8 +95,25 @@ order by started_at;";
         public async Task<MerchRequest> CreateAsync(MerchRequest request, CancellationToken cancellationToken = default)
         {
             const string sql = @"
-                INSERT INTO merch_request (started_at, manager_email, employee_email, clothing_size,status, requested_merch_type,mode,reserved_at, request_merch)
-                VALUES (@StartAt, @ManagerEmail, @EmployeeEmail, @ClothingSize, @Status, @RequestedMerchType, @Mode, @ReservedAt, (CAST(@RequestMerch AS json)));";
+                INSERT INTO 
+                    merch_request (started_at, 
+                                   manager_email, 
+                                   employee_email, 
+                                   clothing_size,
+                                   status, 
+                                   requested_merch_type,
+                                   mode,
+                                   reserved_at, 
+                                   request_merch)
+                VALUES (@StartAt, 
+                        @ManagerEmail, 
+                        @EmployeeEmail, 
+                        @ClothingSize, 
+                        @Status, 
+                        @RequestedMerchType, 
+                        @Mode, 
+                        @ReservedAt, 
+                        (CAST(@RequestMerch AS json)));";
 
             var parameters = new
             {
@@ -104,8 +141,25 @@ order by started_at;";
         public async Task<MerchRequest> UpdateAsync(MerchRequest request, CancellationToken cancellationToken = default)
         {
             const string sql = @"
-                UPDATE merch_request SET (started_at, manager_email, employee_email, clothing_size,status, requested_merch_type,mode,reserved_at, request_merch)
-                = (@StartAt, @ManagerEmail, @EmployeeEmail, @ClothingSize, @Status, @RequestedMerchType, @Mode, @ReservedAt, (CAST(@RequestMerch AS json)))
+                UPDATE merch_request 
+                SET (started_at, 
+                    manager_email, 
+                    employee_email, 
+                    clothing_size,
+                    status, 
+                    requested_merch_type,
+                    mode,
+                    reserved_at, 
+                    request_merch)
+                = (@StartAt, 
+                   @ManagerEmail, 
+                   @EmployeeEmail,
+                   @ClothingSize,
+                   @Status,
+                   @RequestedMerchType,
+                   @Mode,
+                   @ReservedAt,
+                   (CAST(@RequestMerch AS json)))
                 WHERE id=@Id;";
 
             var parameters = new

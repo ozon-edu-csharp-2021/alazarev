@@ -8,7 +8,7 @@ using OzonEdu.MerchApi.Infrastructure.Persistence.Models;
 
 namespace OzonEdu.MerchApi.Migrator.Migrations
 {
-    [Migration(4)]
+    [Migration(2)]
     public class MerchPackTableSeedData:Migration {
         public override void Up()
         {

@@ -17,13 +17,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Persistence.Repositories
         }
 
         public IUnitOfWork UnitOfWork { get; }
-
-        // public Task<TEntity> CreateAsync(TEntity itemToCreate,
-        //     CancellationToken cancellationToken = default)
-        // {
-        //     Items.Add(itemToCreate);
-        //     return Task.FromResult<TEntity>(itemToCreate);
-        // }
+        
 
         public Task<TEntity> UpdateAsync(TEntity itemToUpdate,
             CancellationToken cancellationToken = default)
