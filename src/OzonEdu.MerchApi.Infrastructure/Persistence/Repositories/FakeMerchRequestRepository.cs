@@ -22,6 +22,11 @@ namespace OzonEdu.MerchApi.Infrastructure.Persistence.Repositories
             return Task.FromResult(Enumerable.Empty<MerchRequest>());
         }
 
+        public Task<IEnumerable<MerchRequest>> GetAllEmployeeRequestsAsync(EmployeeId employeeId, CancellationToken cancellationToken = default)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public Task<IEnumerable<MerchRequest>> GetAllWaitingForSupplyRequestsAsync(CancellationToken cancellationToken = default)
         {
             throw new System.NotImplementedException();

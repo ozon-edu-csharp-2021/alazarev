@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Reflection;
 using System.Text.Json.Serialization;
 using FluentValidation;
 using MediatR;
@@ -12,6 +11,8 @@ using OzonEdu.MerchApi.Infrastructure.Filters;
 using OzonEdu.MerchApi.Infrastructure.Interceptors;
 using OzonEdu.MerchApi.Infrastructure.StartupFilters;
 using OzonEdu.MerchApi.Mappers;
+using Serilog;
+
 
 namespace OzonEdu.MerchApi.Infrastructure.Extensions
 {
@@ -19,6 +20,11 @@ namespace OzonEdu.MerchApi.Infrastructure.Extensions
     {
         public static IHostBuilder AddInfrastructure(this IHostBuilder builder)
         {
+            builder.UseSerilog((context, configuration) => configuration
+                .ReadFrom
+                .Configuration(context.Configuration)
+                .WriteTo.Console());
+
             builder.ConfigureServices((context, services) =>
             {
                 services.AddAutoMapper(typeof(GprcMappingProfile), MerchApiInfrastructure.Marker);

@@ -1,14 +1,15 @@
 using MediatR;
+using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 
 namespace OzonEdu.MerchApi.Infrastructure.Queries.GetEmployeeMerchRequests
 {
     public class GetEmployeeMerchRequestsQuery : IRequest<GetEmployeeMerchRequestsResult>
     {
-        public GetEmployeeMerchRequestsQuery(string employeeEmail)
+        public GetEmployeeMerchRequestsQuery(int employeeId)
         {
-            EmployeeEmail = employeeEmail;
+            EmployeeId = employeeId;
         }
 
-        public string EmployeeEmail { get; }
+        public int EmployeeId { get; }
     }
 }

@@ -8,6 +8,7 @@ using OzonEdu.MerchApi.Domain.AggregationModels.Enums;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
+using OzonEdu.MerchApi.Domain.Models;
 using OzonEdu.MerchApi.Infrastructure.Persistence.Models;
 using ClothingSize = CSharpCourse.Core.Lib.Enums.ClothingSize;
 
@@ -32,13 +33,12 @@ namespace OzonEdu.MerchApi.Infrastructure.Mappers
             CreateMap<MerchRequestDto, MerchRequest>().ConstructUsing((d, ctx) =>
                 MerchRequest.Create(
                     d.Id,
-                    EmployeeEmail.Create(d.EmployeeEmail),
+                    EmployeeId.Create(d.EmployeeId),
                     ManagerEmail.Create(d.ManagerEmail),
-                    (ClothingSize)d.ClothingSize,
                     MerchRequestMode.Parse(d.Mode),
                     d.StartedAt,
                     (MerchType)d.RequestedMerchType,
-                    MerchRequestStatus.Parse(d.Status),
+                    Enumeration.FromValue<MerchRequestStatus>(d.Status),
                     d.ReservedAt, GetItems(d, ctx))).IgnoreAllPropertiesWithAnInaccessibleSetter();
             ;
         }

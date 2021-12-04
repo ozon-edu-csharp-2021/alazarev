@@ -6,11 +6,11 @@ namespace OzonEdu.MerchApi.Domain.Events
 {
     public class RequestReservedEvent : INotification
     {
-        public RequestReservedEvent(int requestId)
+        public RequestReservedEvent(MerchRequest request)
         {
-            RequestId = requestId;
+            Request = request;
         }
 
-        public int RequestId { get; }
+        public MerchRequest Request { get; }
     }
 }

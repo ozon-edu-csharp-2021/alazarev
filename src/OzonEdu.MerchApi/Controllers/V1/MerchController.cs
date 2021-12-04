@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using OpenTracing;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.HttpModels;
 using OzonEdu.MerchApi.Infrastructure.Commands.CreateMerchRequest;
@@ -15,10 +16,12 @@ namespace OzonEdu.MerchApi.Controllers.V1
     public class MerchController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ITracer _tracer;
 
-        public MerchController(IMediator mediator, StockApiGrpc.StockApiGrpcClient stockApiGrpcClient)
+        public MerchController(IMediator mediator, StockApiGrpc.StockApiGrpcClient stockApiGrpcClient, ITracer tracer)
         {
             _mediator = mediator;
+            _tracer = tracer;
         }
 
         [HttpPost("create")]
@@ -27,18 +30,18 @@ namespace OzonEdu.MerchApi.Controllers.V1
             CancellationToken token)
         {
             var createMerchRequestCommand =
-                new CreateMerchRequestCommand(request.EmployeeEmail, request.ManagerEmail, request.ClothingSize,
+                new CreateMerchRequestCommand(request.EmployeeId, request.ManagerEmail,
                     request.MerchType,
                     MerchRequestMode.ByRequest);
             var response = await _mediator.Send(createMerchRequestCommand, token);
             return Ok(response);
         }
 
-        [HttpGet("check/{employeeEmail}")]
+        [HttpGet("check/{employeeId:int}")]
         public async Task<ActionResult<GetMerchInfoResponse>> GetMerchInfo(
-            string employeeEmail, CancellationToken token)
+            int employeeId, CancellationToken token)
         {
-            var query = new GetEmployeeMerchRequestsQuery(employeeEmail);
+            var query = new GetEmployeeMerchRequestsQuery(employeeId);
             var response = await _mediator.Send(query, token);
             return Ok(response);
         }

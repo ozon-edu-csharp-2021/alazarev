@@ -13,6 +13,15 @@
         </PackageReference>
         <Protobuf Include="merch-api.proto" GrpServices="Server" />
         <Protobuf Include="stock-api.proto" GrpServices="Client" />
+        <Protobuf Include="supply-api.proto">
+          <GrpcServices>Both</GrpcServices>
+          <Access>Public</Access>
+          <ProtoCompile>True</ProtoCompile>
+          <CompileOutputs>True</CompileOutputs>
+          <OutputDir>obj\Debug/net5.0/</OutputDir>
+          <Generator>MSBuild:Compile</Generator>
+          <GrpServices>Client</GrpServices>
+        </Protobuf>
     </ItemGroup>
 
 </Project>
