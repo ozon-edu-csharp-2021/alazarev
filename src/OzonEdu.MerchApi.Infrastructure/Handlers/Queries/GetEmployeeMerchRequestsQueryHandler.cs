@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
+using OpenTracing;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
 using OzonEdu.MerchApi.Domain.Contracts.DomainServices.MerchRequestService;
@@ -16,18 +17,22 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.Queries
             GetEmployeeMerchRequestsResult>
     {
         private readonly IMerchRequestRepository _merchRequestRepository;
+        private readonly ITracer _tracer;
         private readonly IValidator<GetEmployeeMerchRequestsQuery> _validator;
 
         public GetEmployeeMerchRequestsQueryHandler(IMerchRequestRepository merchRequestRepository,
-            IValidator<GetEmployeeMerchRequestsQuery> validator)
+            IValidator<GetEmployeeMerchRequestsQuery> validator, ITracer trace)
         {
             _merchRequestRepository = merchRequestRepository;
             _validator = validator;
+            _tracer = trace;
         }
 
         public async Task<GetEmployeeMerchRequestsResult> Handle(GetEmployeeMerchRequestsQuery request,
             CancellationToken cancellationToken)
         {
+            using var span = _tracer.BuildSpan($"{nameof(GetEmployeeMerchRequestsQueryHandler)}.Handle").StartActive();
+
             var validationResult =
                 await _validator.ValidateAsync(request, cancellationToken);
 
@@ -36,7 +41,7 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.Queries
                     validationResult.GetAggregateError("Произошла ошибка валидации"));
 
             var requests =
-                await _merchRequestRepository.GetAllEmployeeRequestsAsync(EmployeeEmail.Create(request.EmployeeEmail),
+                await _merchRequestRepository.GetAllEmployeeRequestsAsync(request.EmployeeId,
                     cancellationToken);
 
             return GetEmployeeMerchRequestsResult.Success(requests, "Записи успешно получены");

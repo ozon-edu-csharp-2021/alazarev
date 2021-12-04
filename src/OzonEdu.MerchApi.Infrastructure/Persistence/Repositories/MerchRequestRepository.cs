@@ -1,17 +1,14 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Dapper;
 using Npgsql;
+using OpenTracing;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
-using OzonEdu.MerchApi.Domain.AggregationModels.ValueObjects;
-using OzonEdu.MerchApi.Domain.Contracts;
 using OzonEdu.MerchApi.Infrastructure.Persistence.Interfaces;
 using OzonEdu.MerchApi.Infrastructure.Persistence.Models;
-using OzonEdu.MerchApi.Infrastructure.Repositories;
 using OzonEdu.StockApi.Infrastructure.Repositories.Infrastructure.Interfaces;
 
 namespace OzonEdu.MerchApi.Infrastructure.Persistence.Repositories
@@ -21,28 +18,31 @@ namespace OzonEdu.MerchApi.Infrastructure.Persistence.Repositories
         private readonly IDbConnectionFactory<NpgsqlConnection> _dbConnectionFactory;
         private readonly IChangeTracker _changeTracker;
         private readonly IMapper _mapper;
+        private readonly ITracer _tracer;
         private const int Timeout = 5;
 
-        public async Task<IEnumerable<MerchRequest>> GetAllEmployeeRequestsAsync(EmployeeEmail employeeEmail,
+        public async Task<IEnumerable<MerchRequest>> GetAllEmployeeRequestsAsync(EmployeeId employeeId,
             CancellationToken cancellationToken = default)
         {
+            using var span = _tracer.BuildSpan($"{nameof(MerchRequestRepository)}.GetAllEmployeeRequestsAsync")
+                .StartActive();
+            
             const string sql = @"
 SELECT id, 
        started_at, 
        manager_email, 
-       employee_email,
-       clothing_size, 
+       employee_id,
        status, 
        requested_merch_type, 
        mode, 
        reserved_at,
        request_merch 
 from merch_request 
-where employee_email=@EmployeeEmail;";
+where employee_id=@EmployeeId;";
 
             var parameters = new
             {
-                EmployeeEmail = employeeEmail.Value
+                EmployeeId = employeeId.Value
             };
             var commandDefinition = new CommandDefinition(
                 sql,
@@ -64,8 +64,7 @@ where employee_email=@EmployeeEmail;";
 SELECT id, 
        started_at, 
        manager_email, 
-       employee_email, 
-       clothing_size,
+       employee_id, 
        status, 
        requested_merch_type, 
        mode, 
@@ -98,8 +97,7 @@ order by started_at;";
                 INSERT INTO 
                     merch_request (started_at, 
                                    manager_email, 
-                                   employee_email, 
-                                   clothing_size,
+                                   employee_id, 
                                    status, 
                                    requested_merch_type,
                                    mode,
@@ -107,8 +105,7 @@ order by started_at;";
                                    request_merch)
                 VALUES (@StartAt, 
                         @ManagerEmail, 
-                        @EmployeeEmail, 
-                        @ClothingSize, 
+                        @EmployeeId, 
                         @Status, 
                         @RequestedMerchType, 
                         @Mode, 
@@ -119,8 +116,7 @@ order by started_at;";
             {
                 StartAt = request.StartedAt,
                 ManagerEmail = request.ManagerEmail.Value,
-                EmployeeEmail = request.EmployeeEmail.Value,
-                ClothingSize = (int)request.ClothingSize,
+                EmployeeId = request.EmployeeId.Value,
                 Status = request.Status.Id,
                 RequestedMerchType = (int)request.RequestedMerchType,
                 Mode = request.Mode.Id,
@@ -144,8 +140,7 @@ order by started_at;";
                 UPDATE merch_request 
                 SET (started_at, 
                     manager_email, 
-                    employee_email, 
-                    clothing_size,
+                    employee_id, 
                     status, 
                     requested_merch_type,
                     mode,
@@ -153,8 +148,7 @@ order by started_at;";
                     request_merch)
                 = (@StartAt, 
                    @ManagerEmail, 
-                   @EmployeeEmail,
-                   @ClothingSize,
+                   @EmployeeId,
                    @Status,
                    @RequestedMerchType,
                    @Mode,
@@ -167,8 +161,7 @@ order by started_at;";
                 Id = request.Id,
                 StartAt = request.StartedAt,
                 ManagerEmail = request.ManagerEmail.Value,
-                EmployeeEmail = request.EmployeeEmail.Value,
-                ClothingSize = (int)request.ClothingSize,
+                EmployeeId = request.EmployeeId.Value,
                 Status = request.Status.Id,
                 RequestedMerchType = (int)request.RequestedMerchType,
                 Mode = request.Mode.Id,
@@ -187,11 +180,12 @@ order by started_at;";
         }
 
         public MerchRequestRepository(IDbConnectionFactory<NpgsqlConnection> dbConnectionFactory,
-            IChangeTracker changeTracker, IMapper mapper)
+            IChangeTracker changeTracker, IMapper mapper, ITracer tracer)
         {
             _dbConnectionFactory = dbConnectionFactory;
             _changeTracker = changeTracker;
             _mapper = mapper;
+            _tracer = tracer;
         }
     }
 }

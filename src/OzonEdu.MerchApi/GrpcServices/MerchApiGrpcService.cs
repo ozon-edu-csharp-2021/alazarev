@@ -41,13 +41,12 @@ namespace OzonEdu.MerchApi.GrpcServices
             var mappedRequest = _mapper.Map<CreateMerchRequest>(request);
 
             var createMerchRequestCommand =
-                new CreateMerchRequestCommand(mappedRequest.EmployeeEmail, mappedRequest.ManagerEmail,
-                    mappedRequest.ClothingSize,
+                new CreateMerchRequestCommand(mappedRequest.EmployeeId, mappedRequest.ManagerEmail,
                     mappedRequest.MerchType,
                     MerchRequestMode.ByRequest);
-            
+
             var response = await _mediator.Send(createMerchRequestCommand, context.CancellationToken);
-            
+
             return _mapper.Map<RequestMerchResponseGrpc>(response.Status);
         }
 
@@ -56,7 +55,7 @@ namespace OzonEdu.MerchApi.GrpcServices
             ServerCallContext context)
         {
             var result = await _merchRequestRepository.GetAllEmployeeRequestsAsync(
-                EmployeeEmail.Create(request.EmployeeEmail),
+                EmployeeId.Create(request.EmployeeId),
                 context.CancellationToken);
 
 

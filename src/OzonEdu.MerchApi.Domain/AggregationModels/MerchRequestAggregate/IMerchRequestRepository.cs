@@ -8,7 +8,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
 {
     public interface IMerchRequestRepository : IRepository<MerchRequest>
     {
-        Task<IEnumerable<MerchRequest>> GetAllEmployeeRequestsAsync(EmployeeEmail employeeEmail,
+        Task<IEnumerable<MerchRequest>> GetAllEmployeeRequestsAsync(EmployeeId employeeId,
             CancellationToken cancellationToken = default);
 
         Task<IEnumerable<MerchRequest>> GetAllWaitingForSupplyRequestsAsync(

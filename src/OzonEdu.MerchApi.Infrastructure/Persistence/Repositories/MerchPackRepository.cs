@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -42,6 +43,31 @@ SELECT id, type, positions from merch_pack where type=@Type;";
 
             var dto = merchPackDtos.FirstOrDefault();
             return _mapper.Map<MerchPack>(dto);
+        }
+
+        public async Task<MerchPack> Create(MerchPack merchPack, CancellationToken cancellationToken = default)
+        {
+            const string sql = @"
+                INSERT INTO 
+                    merch_pack (type,
+                                positions)
+                VALUES (@Type, 
+                        (CAST(@Positions AS json)));";
+
+            var parameters = new
+            {
+                Type = (int)merchPack.Type,
+                Positions = JsonSerializer.Serialize(merchPack.Positions)
+            };
+            var commandDefinition = new CommandDefinition(
+                sql,
+                parameters: parameters,
+                commandTimeout: Timeout,
+                cancellationToken: cancellationToken);
+            var connection = await _dbConnectionFactory.CreateConnection(cancellationToken);
+            await connection.ExecuteAsync(commandDefinition);
+            _changeTracker.Track(merchPack);
+            return merchPack;
         }
 
         public MerchPackRepository(IDbConnectionFactory<NpgsqlConnection> dbConnectionFactory,

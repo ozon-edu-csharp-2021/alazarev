@@ -21,6 +21,11 @@ namespace OzonEdu.MerchApi.Infrastructure.Repositories
             return Task.FromResult(Items.FirstOrDefault(p => p.Type == merchType));
         }
 
+        public Task<MerchPack> Create(MerchPack merchPack, CancellationToken cancellationToken = default)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public FakeMerchPackRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }

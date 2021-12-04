@@ -6,6 +6,7 @@ using OzonEdu.MerchApi.Domain.AggregationModels.MerchPackAggregate;
 using OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate;
 using OzonEdu.MerchApi.Domain.Contracts;
 using OzonEdu.MerchApi.Domain.Contracts.DomainServices;
+using OzonEdu.MerchApi.Domain.Contracts.EmployeesService;
 using OzonEdu.MerchApi.Domain.Contracts.StockApiService;
 using OzonEdu.MerchApi.Infrastructure.Bus;
 using OzonEdu.MerchApi.Infrastructure.Configuration;
@@ -27,14 +28,19 @@ namespace OzonEdu.MerchApi.Infrastructure.Extensions
             var stockApiConfigurationSection = configuration.GetSection(nameof(StockApiOptions));
             var stockApiOptions = stockApiConfigurationSection.Get<StockApiOptions>();
             services.Configure<StockApiOptions>(stockApiConfigurationSection);
-            
+
             services.AddGrpcClient<StockApiGrpc.StockApiGrpcClient>(o => { o.Address = new Uri(stockApiOptions.Url); });
             services.AddDomainServices(typeForScan);
             services.AddRepositories(typeForScan);
             services.AddScoped<IUnitOfWork, FakeUnitOfWork>();
             services.AddScoped<IMessageBus, FakeMessageBus>();
             services.AddScoped<IStockApiService, StockApiService>();
+            services.AddScoped<IEmployeeApiService, EmployeeApiService>();
+            
+            services.Configure<EmployeeServiceOptions>(configuration.GetSection(nameof(EmployeeServiceOptions)));
+            services.AddScoped<IEmployeeApiService, EmployeeApiService>();
 
+            services.AddKafkaServices(configuration);
             services.AddDatabaseComponents(configuration);
             return services;
         }
@@ -74,6 +80,15 @@ namespace OzonEdu.MerchApi.Infrastructure.Extensions
             services.AddScoped<IDbConnectionFactory<NpgsqlConnection>, NpgsqlConnectionFactory>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IChangeTracker, ChangeTracker>();
+            return services;
+        }
+
+        public static IServiceCollection AddKafkaServices(this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.Configure<KafkaOptions>(configuration.GetSection(nameof(KafkaOptions)));
+            services.AddSingleton<IProducerBuilderWrapper, ProducerBuilderWrapper>();
+
             return services;
         }
     }

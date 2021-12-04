@@ -6,15 +6,13 @@ using OzonEdu.MerchApi.Domain.Models;
 
 namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
 {
-    public class SupplyMerchItem : ValueObject
+    public sealed class SupplyMerchItem : ValueObject
     {
         public Sku Sku { get; private set; }
-        public Quantity Quantity { get; private set; }
 
-        public SupplyMerchItem(Sku sku, Quantity quantity)
+        public SupplyMerchItem(Sku sku)
         {
             Sku = sku ?? throw new ArgumentNullException(nameof(sku));
-            Quantity = quantity ?? throw new ArgumentNullException(nameof(quantity));
         }
 
         protected override IEnumerable<object> GetEqualityComponents()

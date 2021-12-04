@@ -14,10 +14,9 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
     public class MerchRequest : Entity, IAggregationRoot
     {
         private List<RequestMerchItem> _items = new();
-        public ClothingSize ClothingSize { get; private set; }
         public DateTimeOffset StartedAt { get; private set; }
         public ManagerEmail ManagerEmail { get; private set; }
-        public EmployeeEmail EmployeeEmail { get; private set; }
+        public EmployeeId EmployeeId { get; private set; }
         public MerchRequestStatus Status { get; private set; }
         public MerchType RequestedMerchType { get; private set; }
         public MerchRequestMode Mode { get; private set; }
@@ -25,7 +24,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
 
         public IReadOnlyCollection<RequestMerchItem> Items => _items.AsReadOnly();
 
-        private MerchRequest(EmployeeEmail employeeEmail, ManagerEmail managerEmail, ClothingSize clothingSize,
+        private MerchRequest(EmployeeId employeeId, ManagerEmail managerEmail,
             MerchRequestMode mode,
             DateTimeOffset startedAt)
         {
@@ -33,30 +32,26 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
             if (startedAt == default) throw new IncorrectMerchRequestException();
             //если дата указана в будущем
             if (startedAt > DateTimeOffset.UtcNow) throw new IncorrectMerchRequestException();
-            EmployeeEmail = employeeEmail;
+            EmployeeId = employeeId;
             Mode = mode;
             StartedAt = startedAt;
             ManagerEmail = managerEmail;
-            ClothingSize = clothingSize;
             Status = MerchRequestStatus.Created;
         }
 
-        public static MerchRequest Create(EmployeeEmail employeeEmail, ManagerEmail managerEmail,
-            ClothingSize clothingSize, MerchRequestMode mode,
-            DateTimeOffset startedAt) => new(employeeEmail, managerEmail, clothingSize, mode, startedAt);
+        public static MerchRequest Create(EmployeeId employeeId, ManagerEmail managerEmail, MerchRequestMode mode,
+            DateTimeOffset startedAt) => new(employeeId, managerEmail, mode, startedAt);
 
-        public static MerchRequest Create(int id, EmployeeEmail employeeEmail, ManagerEmail managerEmail,
-            ClothingSize clothingSize,
+        public static MerchRequest Create(int id, EmployeeId employeeId, ManagerEmail managerEmail,
             MerchRequestMode mode,
-            DateTimeOffset startedAt) => new(employeeEmail, managerEmail, clothingSize, mode, startedAt) { Id = id };
+            DateTimeOffset startedAt) => new(employeeId, managerEmail, mode, startedAt) { Id = id };
 
-        public static MerchRequest Create(int id, EmployeeEmail employeeId, ManagerEmail managerEmail,
-            ClothingSize clothingSize,
+        public static MerchRequest Create(int id, EmployeeId employeeId, ManagerEmail managerEmail,
             MerchRequestMode mode,
             DateTimeOffset startedAt, MerchType requestedMerchType, MerchRequestStatus status,
             DateTimeOffset? reservedAt,
             IEnumerable<RequestMerchItem> items) =>
-            new(employeeId, managerEmail, clothingSize, mode, startedAt)
+            new(employeeId, managerEmail, mode, startedAt)
             {
                 Id = id,
                 Status = status,
@@ -113,7 +108,7 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
             {
                 Status = MerchRequestStatus.Reserved;
                 ReservedAt = reservedAt;
-                AddDomainEvent(new RequestReservedEvent(Id));
+                AddDomainEvent(new RequestReservedEvent(this));
             }
             else
             {
@@ -128,6 +123,12 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
                     AddDomainEvent(new RequestOnErrorEvent(Id));
                 }
             }
+        }
+
+        public void Cancel()
+        {
+            Status = MerchRequestStatus.Canceled;
+            AddDomainEvent(new MerchRequestCanceledEvent(this));
         }
     }
 }

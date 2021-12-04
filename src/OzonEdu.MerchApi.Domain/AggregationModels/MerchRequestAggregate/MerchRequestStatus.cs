@@ -19,19 +19,11 @@ namespace OzonEdu.MerchApi.Domain.AggregationModels.MerchRequestAggregate
         public static MerchRequestStatus Error =
             new(6, "Error", "Произошла ошибка");
 
+        public static MerchRequestStatus Canceled =
+            new(7, "Canceled", "Заявка отменена");
+
         public MerchRequestStatus(int id, string name, string description) : base(id, name, description)
         {
         }
-
-        public static MerchRequestStatus Parse(int id) => id switch
-        {
-            1 => Created,
-            2 => InProcess,
-            3 => WaitingForSupply,
-            4 => Reserved,
-            5 => Informed,
-            6 => Error,
-            _ => throw new ArgumentOutOfRangeException(nameof(id), id, null)
-        };
     }
 }

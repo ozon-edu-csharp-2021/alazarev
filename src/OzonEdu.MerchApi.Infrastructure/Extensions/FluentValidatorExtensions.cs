@@ -9,10 +9,10 @@ namespace OzonEdu.MerchApi.Infrastructure.Extensions
 {
     public static class FluentValidatorExtensions
     {
-        public static IRuleBuilderOptions<T, string> MustBeValidObject<T, TValueObject>(
-            this IRuleBuilder<T, string> ruleBuilder,
-            Func<string, TValueObject> factoryMethod) where TValueObject : ValueObject
-            => (IRuleBuilderOptions<T, string>) ruleBuilder.Custom((value, context) =>
+        public static IRuleBuilderOptions<T, TValue> MustBeValidObject<T, TValueObject, TValue>(
+            this IRuleBuilder<T, TValue> ruleBuilder,
+            Func<TValue, TValueObject> factoryMethod) where TValueObject : ValueObject
+            => (IRuleBuilderOptions<T, TValue>) ruleBuilder.Custom((value, context) =>
             {
                 try
                 {

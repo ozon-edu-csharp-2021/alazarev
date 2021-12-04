@@ -2,6 +2,5 @@ using CSharpCourse.Core.Lib.Enums;
 
 namespace OzonEdu.MerchApi.HttpModels
 {
-    public sealed record CreateMerchRequest(string EmployeeEmail, string ManagerEmail, MerchType MerchType,
-        ClothingSize ClothingSize);
+    public sealed record CreateMerchRequest(int EmployeeId, string ManagerEmail, MerchType MerchType);
 }

@@ -20,8 +20,10 @@ namespace OzonEdu.MerchApi.Infrastructure.Handlers.DomainEvents
 
         public async Task Handle(MerchInStockEvent notification, CancellationToken cancellationToken)
         {
-            await _messageBus.NotifyAsync(EmailMessage.Create(notification.Request.EmployeeEmail,
-                "Мерч появился на складе"));
+            //TODO GET EMPLOYEE
+
+            // await _messageBus.NotifyAsync(EmailMessage.Create(notification.Request.EmployeeId,
+            //     "Мерч появился на складе"));
         }
     }
 }
